@@ -64,7 +64,7 @@ class FLogoPainter extends CustomPainter {
     canvas.drawPath(path1, paint);
 
     // Bagian tengah (biru sedang)
-    paint.color = const Color(0xFF1D87C5);
+    paint.color = const Color.fromARGB(255, 197, 29, 29);
     final path2 = Path()
       ..moveTo(size.width * 0.25, size.height * 0.4)
       ..quadraticBezierTo(size.width * 0.8, size.height * 0.3, size.width * 0.75, size.height * 0.5)
