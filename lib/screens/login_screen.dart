@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'register_screen.dart';
-import 'auth_data.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _login() {
+  Future<void> _login() async {
     final loginInput = emailOrUsernameController.text.trim();
     final passwordInput = passwordController.text.trim();
 
@@ -32,8 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final isLoginValid = (loginInput == registeredEmail || loginInput == registeredUsername) &&
-        passwordInput == registeredPassword;
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('email');
+    final savedUsername = prefs.getString('username');
+    final savedPassword = prefs.getString('password');
+
+    final isLoginValid = (loginInput == savedEmail || loginInput == savedUsername) &&
+        passwordInput == savedPassword;
 
     if (isLoginValid) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,110 +54,120 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void dispose() {
+    emailOrUsernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFB1F2BC),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Container(
-            width: 330,
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Selamat Datang',
-                  style: TextStyle(
-                    color: Color(0xFF2A9A9E),
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Montserrat',
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(), // Dismiss keyboard
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Container(
+              width: 330,
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Sebuah Aplikasi Untuk Memprediksi Gejala Penyakit Stroke',
-                    textAlign: TextAlign.center,
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Selamat Datang',
                     style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 12,
+                      color: Color(0xFF2A9A9E),
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
                       fontFamily: 'Montserrat',
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                _buildCenteredTextField(
-                  controller: emailOrUsernameController,
-                  hint: 'Email atau Username',
-                ),
-                const SizedBox(height: 20),
-                _buildCenteredTextField(
-                  controller: passwordController,
-                  hint: 'Password',
-                  obscure: _obscurePassword,
-                  showVisibilityToggle: true,
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: 260,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF66DBA7),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    ),
-                    child: const Text(
-                      'Login',
+                  const SizedBox(height: 10),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Sebuah Aplikasi Untuk Memprediksi Gejala Penyakit Stroke',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Noto Sans Thai UI',
+                        color: Colors.black87,
+                        fontSize: 12,
+                        fontFamily: 'Montserrat',
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("New user?", style: TextStyle(color: Colors.black54)),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                        );
-                      },
+                  const SizedBox(height: 30),
+                  _buildCenteredTextField(
+                    controller: emailOrUsernameController,
+                    hint: 'Email atau Username',
+                  ),
+                  const SizedBox(height: 20),
+                  _buildCenteredTextField(
+                    controller: passwordController,
+                    hint: 'Password',
+                    obscure: _obscurePassword,
+                    showVisibilityToggle: true,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: 260,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF66DBA7),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
                       child: const Text(
-                        "Sign Up",
+                        'Login',
                         style: TextStyle(
-                          color: Color(0xFF2A9A9E),
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          fontFamily: 'Noto Sans Thai UI',
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-              ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Belum punya akun?", style: TextStyle(color: Colors.black54)),
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          );
+                        },
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            color: Color(0xFF2A9A9E),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
         ),

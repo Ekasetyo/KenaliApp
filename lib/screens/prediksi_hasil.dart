@@ -97,6 +97,16 @@ class MenuBeranda extends StatelessWidget {
                 child: Container(width: 50, height: 50, child: Stack()),
               ),
               Positioned(
+                top: 735,
+                child: Container(
+                  width: 195,
+                  height: 49,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0400FF),
+                  ),
+                ),
+              ),
+              Positioned(
                 left: 7,
                 top: 21,
                 child: Container(
@@ -416,6 +426,26 @@ class MenuBeranda extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class PrediksiHasil extends StatelessWidget {
+  const PrediksiHasil({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Hasil Prediksi'),
+        backgroundColor: const Color(0xFF67DCA8),
+      ),
+      body: const Center(
+        child: Text(
+          'Halaman Hasil Prediksi',
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
     );
   }
 }
