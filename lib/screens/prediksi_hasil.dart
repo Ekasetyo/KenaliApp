@@ -232,14 +232,7 @@ class MenuBeranda extends StatelessWidget {
                 top: 210,
                 
                 child: GestureDetector(
-                  onTap: () {
-  Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => detail_prediksi()),
-  );
-      print('Detail ditekan');
-                  }
-      
+                  
                   child: Container(
                     width: 47,
                     height: 21,
