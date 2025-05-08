@@ -4,9 +4,10 @@ import 'package:kenali_app/screens/login_screen.dart';
 import 'package:kenali_app/screens/register_screen.dart';
 import 'package:kenali_app/screens/welcome_screen.dart';
 import 'package:kenali_app/screens/home_screen.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kenali_app/screens/profile_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const KenaliApp());
 }
 
@@ -28,6 +29,7 @@ class KenaliApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }
