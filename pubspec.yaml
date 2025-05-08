@@ -2,34 +2,29 @@ name: kenali_app
 description: A new Flutter project.
 
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-
   font_awesome_flutter: ^10.7.0
-
-  # Jika kamu butuh, tambahkan package lain disini
   cupertino_icons: ^1.0.2
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  url_launcher: ^6.2.5
   shared_preferences: ^2.2.2
+  webview_flutter: ^4.2.2
+  webview_flutter_android: ^4.2.2
 
 flutter:
+  uses-material-design: true
   assets:
     - assets/images/logo_kenali.png
-    # - assets/fonts/
-
+    - assets/images/
   fonts:
     - family: Poppins
-      # - family: MyIcons
       fonts:
         - asset: assets/fonts/Poppins-Regular.ttf
-        # - asset: assets/fonts/MyIcons.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins-Italic.ttf

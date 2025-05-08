@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'auth_data.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
