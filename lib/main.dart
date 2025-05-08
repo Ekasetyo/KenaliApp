@@ -5,6 +5,8 @@ import 'package:kenali_app/screens/register_screen.dart';
 import 'package:kenali_app/screens/welcome_screen.dart';
 import 'package:kenali_app/screens/home_screen.dart';
 import 'package:kenali_app/screens/profile_page.dart';
+import 'package:kenali_app/screens/prediksi_hasil.dart';
+import 'package:kenali_app/screens/detail_prediksi.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,7 @@ class KenaliApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfilePage(),
+        '/prediksi_hasil': (context) => const detail_transaksi(),
       },
     );
   }
