@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: ^2.2.2
   webview_flutter: ^4.2.2
   webview_flutter_android: ^4.2.2
+  intl: ^0.18.1
 
 flutter:
   uses-material-design: true

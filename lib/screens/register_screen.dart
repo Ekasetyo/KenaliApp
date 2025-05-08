@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth_data.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -30,51 +29,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _onSignUp() {
-  final email = emailController.text.trim();
-  final username = usernameController.text.trim();
-  final password = passwordController.text.trim();
-
-  if (email.isEmpty || username.isEmpty || password.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Semua kolom harus diisi')),
-    );
-    return;
-  }
-
-  if (!email.endsWith('@gmail.com')) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Email harus menggunakan domain @gmail.com')),
-    );
-    return;
-  }
-
-  if (username.length < 6 || !_isUsernameValid(username)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Username minimal 6 karakter dan harus kombinasi huruf dan angka')),
-    );
-    return;
-  }
-
-  if (password.length < 8 || !_isPasswordValid(password)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password minimal 8 karakter dan harus mengandung huruf serta angka')),
-    );
-    return;
-  }
-
-  // ✅ Simpan email, username, password
-  registeredEmail = email;
-  registeredUsername = username;
-  registeredPassword = password;
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Akun berhasil dibuat, silakan login')),
-  );
-
-  Navigator.pushReplacementNamed(context, '/login');
-}
-
   bool _isUsernameValid(String username) {
     final hasLetter = username.contains(RegExp(r'[A-Za-z]'));
     final hasNumber = username.contains(RegExp(r'[0-9]'));
@@ -85,6 +39,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final hasLetter = password.contains(RegExp(r'[A-Za-z]'));
     final hasNumber = password.contains(RegExp(r'[0-9]'));
     return hasLetter && hasNumber;
+  }
+
+  Future<void> _onSignUp() async {
+    final email = emailController.text.trim();
+    final username = usernameController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua kolom harus diisi')),
+      );
+      return;
+    }
+
+    if (!email.endsWith('@gmail.com')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email harus menggunakan domain @gmail.com')),
+      );
+      return;
+    }
+
+    if (username.length < 6 || !_isUsernameValid(username)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Username minimal 6 karakter dan harus kombinasi huruf dan angka')),
+      );
+      return;
+    }
+
+    if (password.length < 8 || !_isPasswordValid(password)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password minimal 8 karakter dan harus mengandung huruf serta angka')),
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+    await prefs.setString('username', username);
+    await prefs.setString('password', password);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Akun berhasil dibuat, silakan login')),
+    );
+
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   Widget _buildTextField({
@@ -183,14 +182,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    _buildTextField(
-                      hint: 'Email',
-                      controller: emailController,
-                    ),
-                    _buildTextField(
-                      hint: 'Username',
-                      controller: usernameController,
-                    ),
+                    _buildTextField(hint: 'Email', controller: emailController),
+                    _buildTextField(hint: 'Username', controller: usernameController),
                     _buildTextField(
                       hint: 'Password',
                       controller: passwordController,
@@ -247,33 +240,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'OR',
-                      style: TextStyle(
-                        color: Color(0xFF67DCA8),
-                        fontSize: 12,
-                        fontFamily: 'Noto Sans Thai UI',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(4, (index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          width: 29,
-                          height: 29,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage('https://placehold.co/29x29'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 40),
                   ],
                 ),
               ),
