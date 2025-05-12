@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kenali_app/screens/1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'detail_prediksi.dart';
@@ -105,27 +106,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPredictionBox() {
-    return GestureDetector(
-      onTap: _showPredictionGraph,
-      child: Container(
-        width: double.infinity,
-        height: 111,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF9F7F8),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Text(
-          'Prediksi Dibuat: $predictionCount\nKlik untuk melihat grafik',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+Widget _buildPredictionBox() {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PilihDetail()),
+      );
+    },
+    child: Container(
+      width: double.infinity,
+      height: 111,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9F7F8),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Text(
+        'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildNewsBox() {
     return Container(

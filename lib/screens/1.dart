@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const HomeScreen(),
+        '/': (context) => const PilihDetail(),
         '/detail_prediksi': (context) => const DetailPrediksiScreen(),
         '/profile': (context) => const ProfileScreen(),
       },
@@ -41,14 +41,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class PilihDetail extends StatefulWidget {
+  const PilihDetail({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<PilihDetail> createState() => _PilihDetailState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _PilihDetailState extends State<PilihDetail> {
   String _username = 'Moch. Rizki Romadhoni';
   final List<String> _predictionTitles = [
     'Prediksi 1',
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               time,
               style: const TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               date,
               style: const TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 12,
               ),
             ),
@@ -114,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () => _navigateToPredictionDetail(index),
       child: Container(
         width: double.infinity,
+        height: 100,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: const Color(0xFFF9F7F8),
@@ -142,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE0F7EF),
+      backgroundColor: const Color(0xFF66DBA7),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -169,14 +170,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Text(
                           'Selamat Datang,',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 14,
                           ),
                         ),
                         Text(
                           _username,
                           style: const TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -203,14 +204,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF67DCA8),
-        selectedItemColor: Colors.black87,
-        unselectedItemColor: Colors.black54,
+    bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF64D2A3),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
         currentIndex: 1,
         onTap: _onNavTapped,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.apps_rounded), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
         ],
