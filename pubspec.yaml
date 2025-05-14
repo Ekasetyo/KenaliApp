@@ -25,7 +25,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/logo_kenali.png
-    - assets/images/
+    - assets/images/logo_kenali2.png
+    - assets/images/background1.png
+    - assets/images/background2.png
   fonts:
     - family: Poppins
       fonts:
