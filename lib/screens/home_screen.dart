@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kenali_app/screens/1.dart';
+import 'package:kenali_app/screens/PilihDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'detail_prediksi.dart';
@@ -150,17 +150,43 @@ Widget _buildPredictionBox() {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 10),
-          for (var news in newsList)
-            GestureDetector(
-              onTap: () => _showNewsDialog(news['title']!, news['url']!),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  "• ${news['title']}",
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-            ),
+          Expanded(
+  child: ListView.builder(
+  itemCount: newsList.length,
+  itemBuilder: (context, index) {
+    final news = newsList[index];
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFF67DCA8), // background ListTile
+        borderRadius: BorderRadius.circular(12), // rounded corner
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        title: Text(
+          "• ${news['title']}",
+          style: const TextStyle(fontSize: 14, color: Colors.white),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward,
+          color: Colors.white,
+        ),
+        onTap: () => _showNewsDialog(news['title']!, news['url']!),
+      ),
+    );
+  },
+),
+
+),
+
+
+
         ],
       ),
     );
