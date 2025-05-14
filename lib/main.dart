@@ -2,21 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 // Import semua layar yang digunakan
-import 'screens/splash_screen.dart';
+import 'screens/intro_screen.dart';
 import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
-import 'screens/welcome_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_page.dart';
 import 'screens/prediksi_hasil.dart';
-import 'screens/detail_prediksi.dart'; // Pastikan class di file ini bernama DetailPrediksiScreen
+import 'screens/detail_prediksi.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Inisialisasi format tanggal lokal Indonesia
   await initializeDateFormatting('id_ID', null);
-
   runApp(const KenaliApp());
 }
 
@@ -31,16 +26,14 @@ class KenaliApp extends StatelessWidget {
         primarySwatch: Colors.green,
         fontFamily: 'Poppins',
       ),
-      initialRoute: '/home', // Rute awal aplikasi
+      initialRoute: '/', // Mulai dari onboarding screen
       routes: {
-        '/': (context) => const SplashScreen(),
-        '/welcome': (context) => const WelcomeScreen(),
+        '/': (context) => const IntroScreen(), // Pastikan class ini sudah benar
         '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfilePage(),
         '/prediksi_hasil': (context) => const PrediksiHasil(),
-        '/detail_prediksi': (context) => const DetailPrediksi(), // Pastikan nama class ini sesuai
+        '/detail_prediksi': (context) => const DetailPrediksi(),
       },
     );
   }
