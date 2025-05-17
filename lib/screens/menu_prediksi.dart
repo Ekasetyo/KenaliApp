@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'editable_dropdown_field.dart'; // sesuaikan lokasi file jika berbeda
 
 void main() {
-  runApp(MyApp());
+  runApp(MenuDeteksiPage());
 }
 
-class MyApp extends StatelessWidget {
+class MenuDeteksiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 class MenuDeteksi extends StatefulWidget {
   const MenuDeteksi({super.key});
@@ -96,6 +95,10 @@ class DropdownOnlyField extends StatelessWidget {
 }
 
 class _MenuDeteksiState extends State<MenuDeteksi> {
+  final TextEditingController usiaController = TextEditingController();
+  final TextEditingController bmiController = TextEditingController();
+  final TextEditingController gulaDarahController = TextEditingController();
+
   String usiaValue = '';
   String bmiValue = '';
   String gulaValue = '';
@@ -176,28 +179,30 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
               ),
               const SizedBox(height: 16),
 
-              ManualInputField(
-                label: 'Usia',
-                value: usiaValue,
-                isNumber: true,
-                onChanged: (val) => setState(() => usiaValue = val),
+              DropdownOnlyField(
+                label: 'Jenis kelamin',
+                value: genderValue,
+                options: ['perempuan', 'laki-laki'],
+                onChanged: (val) => setState(() => genderValue = val ?? ''),
               ),
               const SizedBox(height: 12),
 
-              ManualInputField(
-                label: 'BMI',
-                value: bmiValue,
-                isNumber: true,
-                onChanged: (val) => setState(() => bmiValue = val),
-              ),
-              const SizedBox(height: 12),
-
-              ManualInputField(
-                label: 'Kadar gula darah',
-                value: gulaValue,
-                isNumber: true,
-                onChanged: (val) => setState(() => gulaValue = val),
-              ),
+              TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Usia",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  controller: usiaController
+                  // onChanged: onChanged,
+                  ),
+              // ManualInputField(
+              //   label: 'Usia',
+              //   value: usiaValue,
+              //   isNumber: true,
+              //   onChanged: (val) => setState(() => usiaValue = val),
+              // ),
               const SizedBox(height: 12),
 
               DropdownOnlyField(
@@ -208,6 +213,18 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
               ),
               const SizedBox(height: 12),
 
+              TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Kadar gula darah",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  controller: gulaDarahController
+                  // onChanged: onChanged,
+                  ),
+                  const SizedBox(height: 12),
+
               DropdownOnlyField(
                 label: 'Riwayat Penyakit jantung',
                 value: jantungValue,
@@ -215,6 +232,20 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
                 onChanged: (val) => setState(() => jantungValue = val ?? ''),
               ),
               const SizedBox(height: 12),
+
+              TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "BMI",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  controller: bmiController
+                  // onChanged: onChanged,
+                  ),
+              const SizedBox(height: 12),
+
+              
 
               DropdownOnlyField(
                 label: 'Status menikah',
@@ -248,25 +279,19 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
               ),
               const SizedBox(height: 12),
 
-              DropdownOnlyField(
-                label: 'Jenis kelamin',
-                value: genderValue,
-                options: ['perempuan', 'laki-laki'],
-                onChanged: (val) => setState(() => genderValue = val ?? ''),
-              ),
-
               const SizedBox(height: 24),
 
               Center(
                 child: ElevatedButton(
                   onPressed: _validateAndDetect,
-                  child: const Text('Deteksi'),
+                  child: const Text('Deteksi',style: TextStyle(color : Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold,fontSize :18),),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6DE39D),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 200, vertical: 25),
                   ),
                 ),
               ),

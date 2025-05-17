@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kenali_app/screens/PilihDetail.dart';
+import 'package:kenali_app/screens/menu_prediksi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'detail_prediksi.dart';
@@ -133,6 +134,33 @@ Widget _buildPredictionBox() {
   );
 }
 
+Widget _buildPredictionBox1() {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>  MenuDeteksiPage()),
+      );
+    },
+    child: Container(
+      width: double.infinity,
+      height:110,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9F7F8),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Text(
+        'DETEKSI: $predictionCount\nKlik untuk mulai prediksi',
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+  );
+}
+
 
   Widget _buildNewsBox() {
     return Container(
@@ -238,9 +266,11 @@ Widget _buildPredictionBox() {
                   _buildRealTimeClock(),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               _buildPredictionBox(),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
+              _buildPredictionBox1(),
+              const SizedBox(height: 15),
               Expanded(child: _buildNewsBox()),
             ],
           ),
