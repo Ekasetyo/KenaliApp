@@ -146,7 +146,7 @@ Widget _buildPredictionBox() {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Berita tentang Stroke',
+            'Informasi tentang Stroke',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 10),
