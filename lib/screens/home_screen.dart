@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kenali_app/screens/PilihDetail.dart';
+
 import 'package:kenali_app/screens/menu_prediksi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showPredictionGraph() {
-    Navigator.pushNamed(context, '/detail_prediksi');
+    Navigator.pushNamed(context, '/RiwayatPrediksi');
   }
 
   void _showNewsDialog(String title, String url) {
@@ -107,32 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-Widget _buildPredictionBox() {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PilihDetail()),
-      );
-    },
-    child: Container(
-      width: double.infinity,
-      height: 111,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F7F8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Text(
-        'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  );
-}
+
 
 Widget _buildPredictionBox1() {
   return GestureDetector(
@@ -267,7 +242,7 @@ Widget _buildPredictionBox1() {
                 ],
               ),
               const SizedBox(height: 15),
-              _buildPredictionBox(),
+              
               const SizedBox(height: 15),
               _buildPredictionBox1(),
               const SizedBox(height: 15),
