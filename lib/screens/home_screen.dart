@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kenali_app/screens/PilihDetail.dart';
 import 'package:kenali_app/screens/menu_prediksi.dart';
+import 'package:kenali_app/screens/riwayat_prediksi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'detail_prediksi.dart';
@@ -46,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showPredictionGraph() {
-    Navigator.pushNamed(context, '/detail_prediksi');
+    Navigator.pushNamed(context, '/riwayat_prediksi');
   }
 
   void _showNewsDialog(String title, String url) {
@@ -107,60 +108,59 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-Widget _buildPredictionBox() {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PilihDetail()),
-      );
-    },
-    child: Container(
-      width: double.infinity,
-      height: 111,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F7F8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Text(
-        'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+  Widget _buildPredictionBox() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PilihDetail()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        height: 111,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9F7F8),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildPredictionBox1() {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) =>  MenuDeteksiPage()),
-      );
-    },
-    child: Container(
-      width: double.infinity,
-      height:110,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F7F8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Text(
-        'DETEKSI: $predictionCount\nKlik untuk mulai prediksi',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+  Widget _buildPredictionBox1() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MenuDeteksiPage()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        height: 110,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9F7F8),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          'DETEKSI: $predictionCount\nKlik untuk mulai prediksi',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildNewsBox() {
     return Container(
@@ -179,42 +179,38 @@ Widget _buildPredictionBox1() {
           ),
           const SizedBox(height: 10),
           Expanded(
-  child: ListView.builder(
-  itemCount: newsList.length,
-  itemBuilder: (context, index) {
-    final news = newsList[index];
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFF67DCA8), // background ListTile
-        borderRadius: BorderRadius.circular(12), // rounded corner
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            child: ListView.builder(
+              itemCount: newsList.length,
+              itemBuilder: (context, index) {
+                final news = newsList[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF67DCA8),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      "• ${news['title']}",
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                    ),
+                    onTap: () => _showNewsDialog(news['title']!, news['url']!),
+                  ),
+                );
+              },
+            ),
           ),
-        ],
-      ),
-      child: ListTile(
-        title: Text(
-          "• ${news['title']}",
-          style: const TextStyle(fontSize: 14, color: Colors.white),
-        ),
-        trailing: const Icon(
-          Icons.arrow_forward,
-          color: Colors.white,
-        ),
-        onTap: () => _showNewsDialog(news['title']!, news['url']!),
-      ),
-    );
-  },
-),
-
-),
-
-
-
         ],
       ),
     );
@@ -223,7 +219,7 @@ Widget _buildPredictionBox1() {
   void _onNavTapped(int index) {
     if (index == 1) return;
     if (index == 0) {
-      Navigator.pushNamed(context, '/detail_prediksi');
+      Navigator.pushNamed(context, '/riwayat_prediksi');
     } else if (index == 2) {
       Navigator.pushNamed(context, '/profile');
     }
@@ -244,7 +240,7 @@ Widget _buildPredictionBox1() {
                   GestureDetector(
                     onTap: () => Navigator.pushNamed(context, '/profile'),
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                                            padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,

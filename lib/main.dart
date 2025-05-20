@@ -8,6 +8,7 @@ import 'screens/home_screen.dart';
 import 'screens/profile_page.dart';
 import 'screens/prediksi_hasil.dart';
 import 'screens/detail_prediksi.dart';
+import 'screens/riwayat_prediksi.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ class KenaliApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfilePage(),
         '/prediksi_hasil': (context) => const PrediksiHasil(),
+        '/riwayat_prediksi': (context) => const RiwayatPrediksiPage(),
         '/detail_prediksi': (context) => const DetailPrediksi(),
       },
     );
