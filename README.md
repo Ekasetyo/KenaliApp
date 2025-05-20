@@ -1,4 +1,4 @@
-# finomaly_app
+# kenaly_app
 
 A new Flutter project.
 
