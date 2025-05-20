@@ -6,8 +6,9 @@ import 'screens/intro_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_page.dart';
-
 import 'screens/detail_prediksi.dart';
+import 'screens/menu_prediksi.dart'; // Pastikan path-nya sesuai
+import 'screens/riwayat_prediksi.dart'; // Pastikan path-nya sesuai
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,8 +33,9 @@ class KenaliApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfilePage(),
-        '/prediksi_hasil': (context) => const PrediksiHasil(),
         '/detail_prediksi': (context) => const DetailPrediksi(),
+        '/menu_prediksi': (context) => const MenuPrediksi(), // Tambahkan route untuk MenuPrediksi
+        '/riwayat_prediksi': (context) => const RiwayatPrediksi(), // Tambahkan route untuk RiwayatPrediksi
       },
     );
   }

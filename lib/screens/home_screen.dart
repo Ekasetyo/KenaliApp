@@ -1,11 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import 'package:kenali_app/screens/menu_prediksi.dart';
-import 'package:kenali_app/screens/riwayat_prediksi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'detail_prediksi.dart';
+import 'menu_prediksi.dart';
+import 'riwayat_prediksi.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -25,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       "title": "Faktor risiko stroke termasuk tekanan darah tinggi, merokok, dan diabetes.",
-      "url": "https://www.halodoc.com/artikel/mengenal-faktor-risiko-stroke"
+      "url": "https://www.halodok.com/artikel/mengenal-faktor-risiko-stroke"
     },
     {
       "title": "Makanan tinggi lemak trans dapat meningkatkan risiko stroke.",
@@ -44,10 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _username = prefs.getString('username') ?? 'Pengguna';
     });
-  }
-
-  void _showPredictionGraph() {
-    Navigator.pushNamed(context, '/detail_prediksi');
   }
 
   void _showNewsDialog(String title, String url) {
@@ -108,51 +103,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-Widget _buildPredictionBox() {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PilihDetail()),
-      );
-    },
-    child: Container(
-      width: double.infinity,
-      height: 111,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F7F8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Text(
-        'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  );
-}
-
-  Widget _buildPredictionBox1() {
+  Widget _buildPredictionBox() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MenuDeteksiPage()),
+          MaterialPageRoute(builder: (context) => const MenuPrediksi()),
         );
       },
       child: Container(
         width: double.infinity,
-        height: 110,
+        height: 111,
         decoration: BoxDecoration(
           color: const Color(0xFFF9F7F8),
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(20),
         child: Text(
-          'DETEKSI: $predictionCount\nKlik untuk mulai prediksi',
+          'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -178,7 +146,8 @@ Widget _buildPredictionBox() {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 10),
-          Expanded(
+          SizedBox(
+            height: 150, // Atur tinggi sesuai kebutuhan
             child: ListView.builder(
               itemCount: newsList.length,
               itemBuilder: (context, index) {
@@ -216,8 +185,9 @@ Widget _buildPredictionBox() {
     );
   }
 
+  // Revisi: klik icon Dashboard sekarang ke RiwayatPrediksi
   void _onNavTapped(int index) {
-    if (index == 1) return;
+    if (index == 1) return; // sudah di Home, tidak navigasi apa-apa
     if (index == 0) {
       Navigator.pushNamed(context, '/riwayat_prediksi');
     } else if (index == 2) {
@@ -234,13 +204,12 @@ Widget _buildPredictionBox() {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Header bar
               Row(
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.pushNamed(context, '/profile'),
                     child: Container(
-                                            padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -263,9 +232,7 @@ Widget _buildPredictionBox() {
                 ],
               ),
               const SizedBox(height: 15),
-              
-              const SizedBox(height: 15),
-              _buildPredictionBox1(),
+              _buildPredictionBox(),
               const SizedBox(height: 15),
               Expanded(child: _buildNewsBox()),
             ],
