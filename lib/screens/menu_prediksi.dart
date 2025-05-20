@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'editable_dropdown_field.dart'; // sesuaikan lokasi file jika berbeda
+import 'home_screen.dart'; // pastikan file home_screen.dart ada dan berisi HomeScreen widget
 
 void main() {
-  runApp(MenuDeteksiPage());
+  runApp(MenuPrediksiPage());
 }
 
-class MenuDeteksiPage extends StatelessWidget {
+class MenuPrediksiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Aplikasi Deteksi Stroke',
+      title: 'Aplikasi Prediksi Stroke',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: MenuDeteksi(), // Awal aplikasi diarahkan ke MenuDeteksi
+      home: MenuPrediksi(), // Awal aplikasi diarahkan ke MenuPrediksi
     );
   }
 }
 
-class MenuDeteksi extends StatefulWidget {
-  const MenuDeteksi({super.key});
+class MenuPrediksi extends StatefulWidget {
+  const MenuPrediksi({super.key});
 
   @override
-  State<MenuDeteksi> createState() => _MenuDeteksiState();
+  State<MenuPrediksi> createState() => _MenuPrediksiState();
 }
 
 // Widget untuk input manual angka saja (textfield)
@@ -54,7 +55,7 @@ class ManualInputField extends StatelessWidget {
   }
 }
 
-// Widget untuk dropdown hanya tanpa input manual
+// Widget untuk dropdown tanpa input manual
 class DropdownOnlyField extends StatelessWidget {
   final String label;
   final String value;
@@ -94,7 +95,7 @@ class DropdownOnlyField extends StatelessWidget {
   }
 }
 
-class _MenuDeteksiState extends State<MenuDeteksi> {
+class _MenuPrediksiState extends State<MenuPrediksi> {
   final TextEditingController usiaController = TextEditingController();
   final TextEditingController bmiController = TextEditingController();
   final TextEditingController gulaDarahController = TextEditingController();
@@ -122,7 +123,11 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
     );
   }
 
-  void _validateAndDetect() {
+  void _validateAndPredict() {
+    usiaValue = usiaController.text.trim();
+    bmiValue = bmiController.text.trim();
+    gulaValue = gulaDarahController.text.trim();
+
     if (usiaValue.isEmpty ||
         bmiValue.isEmpty ||
         gulaValue.isEmpty ||
@@ -161,24 +166,40 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
     print('Perokok: $rokokValue');
     print('Jenis kelamin: $genderValue');
 
-    _showSnackBar('Data valid, proses deteksi dapat dilakukan.');
+    _showSnackBar('Data valid, proses prediksi dapat dilakukan.');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFB2F7C1),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF6DE39D),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              (route) => false,
+            );
+          },
+        ),
+        title: const Text(
+          'Prediksi Dini',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold, // Tambahkan ini agar bold
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: ListView(
+            padding: const EdgeInsets.only(top: 40),  // <-- padding atas tambahan supaya tidak ketutup
             children: [
-              const Text(
-                'Deteksi Dini',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-
               DropdownOnlyField(
                 label: 'Jenis kelamin',
                 value: genderValue,
@@ -188,21 +209,14 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
               const SizedBox(height: 12),
 
               TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Usia",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  controller: usiaController
-                  // onChanged: onChanged,
-                  ),
-              // ManualInputField(
-              //   label: 'Usia',
-              //   value: usiaValue,
-              //   isNumber: true,
-              //   onChanged: (val) => setState(() => usiaValue = val),
-              // ),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Usia",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                controller: usiaController,
+              ),
               const SizedBox(height: 12),
 
               DropdownOnlyField(
@@ -214,16 +228,15 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
               const SizedBox(height: 12),
 
               TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Kadar gula darah",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  controller: gulaDarahController
-                  // onChanged: onChanged,
-                  ),
-                  const SizedBox(height: 12),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Kadar gula darah",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                controller: gulaDarahController,
+              ),
+              const SizedBox(height: 12),
 
               DropdownOnlyField(
                 label: 'Riwayat Penyakit jantung',
@@ -234,18 +247,15 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
               const SizedBox(height: 12),
 
               TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "BMI",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  controller: bmiController
-                  // onChanged: onChanged,
-                  ),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "BMI",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                controller: bmiController,
+              ),
               const SizedBox(height: 12),
-
-              
 
               DropdownOnlyField(
                 label: 'Status menikah',
@@ -277,14 +287,18 @@ class _MenuDeteksiState extends State<MenuDeteksi> {
                 options: ['tidak', 'iya'],
                 onChanged: (val) => setState(() => rokokValue = val ?? ''),
               ),
-              const SizedBox(height: 12),
-
               const SizedBox(height: 24),
 
               Center(
                 child: ElevatedButton(
-                  onPressed: _validateAndDetect,
-                  child: const Text('Deteksi',style: TextStyle(color : Color.fromARGB(255, 0, 0, 0),fontWeight: FontWeight.bold,fontSize :18),),
+                  onPressed: _validateAndPredict,
+                  child: const Text(
+                    'Prediksi',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6DE39D),
                     shape: RoundedRectangleBorder(
