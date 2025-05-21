@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
@@ -60,10 +59,10 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
   void _onNavTapped(int index) {
     switch (index) {
       case 1:
-        Navigator.pushNamed(context, '/home'); // Navigate to HomeScreen
+        Navigator.pushNamed(context, '/home');
         break;
       case 2:
-        Navigator.pushNamed(context, '/profile'); // Navigate to ProfilePage
+        Navigator.pushNamed(context, '/profile');
         break;
     }
   }
@@ -86,7 +85,7 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
         backgroundColor: const Color(0xFF64D2A3),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
-        currentIndex: 1, // Set current index to 1 for RiwayatPrediksi
+        currentIndex: 1,
         onTap: _onNavTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
@@ -204,7 +203,7 @@ class RiwayatListBox extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ListView.builder(
-            itemCount: 50,
+            itemCount: 4,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
@@ -215,23 +214,44 @@ class RiwayatListBox extends StatelessWidget {
                   color: const Color(0xFF67DCA8),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Prediksi ${index + 1}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Prediksi ${index + 1}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Text(
+                          'klik untuk melihat detail',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 6,
+                          ),
+                        ),
+                      ],
                     ),
-                    const Text(
-                      'klik untuk melihat detail',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 6,
+                    ElevatedButton(
+                      onPressed: () {
+                        print('Detail untuk item $index');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF67DCA8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 2,
                       ),
+                      child: const Text('Detail'),
                     ),
                   ],
                 ),
