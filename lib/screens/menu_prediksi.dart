@@ -1,3 +1,4 @@
+// Import yang diperlukan
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,21 +6,6 @@ import 'dart:convert';
 
 import 'editable_dropdown_field.dart';
 import 'home_screen.dart';
-
-class MenuPrediksiPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Aplikasi Prediksi Stroke',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      home: MenuPrediksi(),
-    );
-  }
-}
 
 class MenuPrediksi extends StatefulWidget {
   const MenuPrediksi({super.key});
@@ -56,39 +42,52 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
     );
   }
 
+  int _mapWorkType(String val) {
+    switch (val) {
+      case 'tidak bekerja':
+        return 0;
+      case 'anak-anak':
+        return 1;
+      case 'PNS':
+        return 2;
+      case 'wiraswasta':
+        return 3;
+      default:
+        return 0;
+    }
+  }
+
+  int _mapResidence(String val) {
+    return val == 'perkotaan' ? 1 : 0;
+  }
+
+  int _mapBool(String val) {
+    return val == 'iya' ? 1 : 0;
+  }
+
   Future<void> _validateAndConfirm() async {
     final usia = usiaController.text.trim();
     final bmi = bmiController.text.trim();
     final gula = gulaDarahController.text.trim();
 
-    if (usia.isEmpty || bmi.isEmpty || gula.isEmpty ||
-        genderValue.isEmpty || hipertensiValue.isEmpty || jantungValue.isEmpty ||
-        menikahValue.isEmpty || pekerjaanValue.isEmpty ||
-        areaValue.isEmpty || rokokValue.isEmpty) {
-      _showSnackBar('Mohon isi semua data terlebih dahulu!');
+    if ([usia, bmi, gula, genderValue, hipertensiValue, jantungValue, menikahValue, pekerjaanValue, areaValue, rokokValue].contains('') || [usia, bmi, gula].any((v) => !_isNumberValid(v))) {
+      _showSnackBar('Mohon isi semua data dengan benar!');
       return;
     }
 
-    if (!_isNumberValid(usia) || !_isNumberValid(bmi) || !_isNumberValid(gula)) {
-      _showSnackBar('Usia, BMI, dan gula darah harus berupa angka yang valid!');
-      return;
-    }
-
-    final shouldProceed = await showDialog<bool>(
+    final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Konfirmasi'),
-        content: const Text('Apakah data sudah sesuai untuk dilakukan deteksi?'),
+      builder: (_) => AlertDialog(
+        title: Text('Konfirmasi'),
+        content: Text('Apakah data sudah sesuai untuk dilakukan deteksi?'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Tidak')),
-          TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Ya')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Tidak')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Ya')),
         ],
       ),
     );
 
-    if (shouldProceed == true) {
-      _performDetection();
-    }
+    if (confirm == true) _performDetection();
   }
 
   Future<void> _performDetection() async {
@@ -98,38 +97,38 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
     });
 
     final prefs = await SharedPreferences.getInstance();
-    String? userDataString = prefs.getString('user_data');
-    String? userId = jsonDecode(userDataString ?? '{}')['id'];
+    final userData = jsonDecode(prefs.getString('user_data') ?? '{}');
+    final userId = userData['id'];
+
+    final body = {
+      'user_id': userId,
+      'sex': genderValue == 'laki-laki' ? 1 : 0,
+      'age': double.parse(usiaController.text),
+      'hypertension': _mapBool(hipertensiValue),
+      'heart_disease': _mapBool(jantungValue),
+      'ever_married': _mapBool(menikahValue),
+      'work_type': _mapWorkType(pekerjaanValue),
+      'Residence_type': _mapResidence(areaValue),
+      'avg_glucose_level': double.parse(gulaDarahController.text),
+      'bmi': double.parse(bmiController.text),
+      'smoking_status': _mapBool(rokokValue),
+    };
 
     try {
       final response = await http.post(
         Uri.parse('http://localhost:5000/api/predict'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'user_id': userId,
-          'sex': genderValue == 'laki-laki' ? 1 : 0,
-          'age': int.parse(usiaController.text),
-          'hypertension': hipertensiValue == 'iya' ? 1 : 0,
-          'heart_disease': jantungValue == 'iya' ? 1 : 0,
-          'ever_married': menikahValue == 'iya' ? 1 : 0,
-          'work_type': pekerjaanValue,
-          'Residence_type': areaValue,
-          'avg_glucose_level': double.parse(gulaDarahController.text),
-          'bmi': double.parse(bmiController.text),
-          'smoking_status': rokokValue,
-        }),
+        body: json.encode(body),
       );
 
-      if (response.statusCode == 200) {
-        final result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
+      if (response.statusCode == 200 && result['status'] == 'success') {
         setState(() {
-          predictionResult = result['prediction'] == 1
-              ? 'Berisiko terkena stroke'
-              : 'Tidak berisiko stroke';
+          predictionResult = result['prediction'];
         });
-        _showSnackBar('Deteksi berhasil: $predictionResult');
+        _showSnackBar('Deteksi berhasil!');
       } else {
-        _showSnackBar('Terjadi kesalahan server!');
+        _showSnackBar(result['message'] ?? 'Terjadi kesalahan!');
       }
     } catch (e) {
       _showSnackBar('Gagal terhubung ke server.');
@@ -166,18 +165,13 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
         backgroundColor: const Color(0xFF6DE39D),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
-            );
-          },
+          onPressed: () => Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          ),
         ),
-        title: const Text(
-          'Prediksi Dini',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Prediksi Dini', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -186,123 +180,34 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Lengkapi Data Anda',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87),
-              ),
+              const Text('Lengkapi Data Anda', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Jenis kelamin',
-                  value: genderValue,
-                  options: ['perempuan', 'laki-laki'],
-                  onChanged: (val) => setState(() => genderValue = val ?? ''),
-                ),
-              ),
-              _customCardInput(
-                child: TextField(
-                  controller: usiaController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Usia', border: InputBorder.none),
-                ),
-              ),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Hipertensi',
-                  value: hipertensiValue,
-                  options: ['tidak', 'iya'],
-                  onChanged: (val) => setState(() => hipertensiValue = val ?? ''),
-                ),
-              ),
-              _customCardInput(
-                child: TextField(
-                  controller: gulaDarahController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Kadar gula darah', border: InputBorder.none),
-                ),
-              ),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Riwayat Penyakit jantung',
-                  value: jantungValue,
-                  options: ['tidak', 'iya'],
-                  onChanged: (val) => setState(() => jantungValue = val ?? ''),
-                ),
-              ),
-              _customCardInput(
-                child: TextField(
-                  controller: bmiController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'BMI', border: InputBorder.none),
-                ),
-              ),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Status menikah',
-                  value: menikahValue,
-                  options: ['tidak', 'iya'],
-                  onChanged: (val) => setState(() => menikahValue = val ?? ''),
-                ),
-              ),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Pekerjaan',
-                  value: pekerjaanValue,
-                  options: ['tidak bekerja', 'anak-anak', 'PNS', 'wiraswasta'],
-                  onChanged: (val) => setState(() => pekerjaanValue = val ?? ''),
-                ),
-              ),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Area tempat tinggal',
-                  value: areaValue,
-                  options: ['pedesaan', 'perkotaan'],
-                  onChanged: (val) => setState(() => areaValue = val ?? ''),
-                ),
-              ),
-              _customCardInput(
-                child: DropdownOnlyField(
-                  label: 'Perokok',
-                  value: rokokValue,
-                  options: ['tidak', 'iya'],
-                  onChanged: (val) => setState(() => rokokValue = val ?? ''),
-                ),
-              ),
+
+              _customCardInput(child: DropdownOnlyField(label: 'Jenis kelamin', value: genderValue, options: ['perempuan', 'laki-laki'], onChanged: (val) => setState(() => genderValue = val ?? ''))),
+              _customCardInput(child: TextField(controller: usiaController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Usia', border: InputBorder.none))),
+              _customCardInput(child: DropdownOnlyField(label: 'Hipertensi', value: hipertensiValue, options: ['tidak', 'iya'], onChanged: (val) => setState(() => hipertensiValue = val ?? ''))),
+              _customCardInput(child: TextField(controller: gulaDarahController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Kadar gula darah', border: InputBorder.none))),
+              _customCardInput(child: DropdownOnlyField(label: 'Penyakit jantung', value: jantungValue, options: ['tidak', 'iya'], onChanged: (val) => setState(() => jantungValue = val ?? ''))),
+              _customCardInput(child: TextField(controller: bmiController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'BMI', border: InputBorder.none))),
+              _customCardInput(child: DropdownOnlyField(label: 'Status menikah', value: menikahValue, options: ['tidak', 'iya'], onChanged: (val) => setState(() => menikahValue = val ?? ''))),
+              _customCardInput(child: DropdownOnlyField(label: 'Pekerjaan', value: pekerjaanValue, options: ['tidak bekerja', 'anak-anak', 'PNS', 'wiraswasta'], onChanged: (val) => setState(() => pekerjaanValue = val ?? ''))),
+              _customCardInput(child: DropdownOnlyField(label: 'Area tinggal', value: areaValue, options: ['pedesaan', 'perkotaan'], onChanged: (val) => setState(() => areaValue = val ?? ''))),
+              _customCardInput(child: DropdownOnlyField(label: 'Perokok', value: rokokValue, options: ['tidak', 'iya'], onChanged: (val) => setState(() => rokokValue = val ?? ''))),
+
               const SizedBox(height: 24),
               Center(
                 child: isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : GestureDetector(
                         onTap: _validateAndConfirm,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 18),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF6DE39D), Color(0xFF48C78E)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: const LinearGradient(colors: [Color(0xFF6DE39D), Color(0xFF48C78E)]),
                             borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.withOpacity(0.4),
-                                blurRadius: 10,
-                                offset: Offset(0, 5),
-                              ),
-                            ],
+                            boxShadow: [BoxShadow(color: Colors.green.withOpacity(0.4), blurRadius: 10, offset: Offset(0, 5))],
                           ),
-                          child: const Text(
-                            'Prediksi',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
+                          child: const Text('Prediksi', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ),
               ),
@@ -311,11 +216,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
                 Center(
                   child: Text(
                     'Hasil: $predictionResult',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
                   ),
                 ),
             ],
