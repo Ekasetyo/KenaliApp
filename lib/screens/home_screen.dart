@@ -1,10 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import 'package:kenali_app/screens/menu_prediksi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'detail_prediksi.dart';
+import 'menu_prediksi.dart';
+import 'riwayat_prediksi.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       "title": "Faktor risiko stroke termasuk tekanan darah tinggi, merokok, dan diabetes.",
-      "url": "https://www.halodoc.com/artikel/mengenal-faktor-risiko-stroke"
+      "url": "https://www.halodok.com/artikel/mengenal-faktor-risiko-stroke"
     },
     {
       "title": "Makanan tinggi lemak trans dapat meningkatkan risiko stroke.",
@@ -43,10 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _username = prefs.getString('username') ?? 'Pengguna';
     });
-  }
-
-  void _showPredictionGraph() {
-    Navigator.pushNamed(context, '/RiwayatPrediksi');
   }
 
   void _showNewsDialog(String title, String url) {
@@ -107,35 +103,32 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-
-Widget _buildPredictionBox1() {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) =>  MenuDeteksiPage()),
-      );
-    },
-    child: Container(
-      width: double.infinity,
-      height:110,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F7F8),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Text(
-        'DETEKSI: $predictionCount\nKlik untuk mulai prediksi',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+  Widget _buildPredictionBox() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MenuPrediksi()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        height: 111,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9F7F8),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildNewsBox() {
     return Container(
@@ -153,52 +146,50 @@ Widget _buildPredictionBox1() {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 10),
-          Expanded(
-  child: ListView.builder(
-  itemCount: newsList.length,
-  itemBuilder: (context, index) {
-    final news = newsList[index];
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFF67DCA8), // background ListTile
-        borderRadius: BorderRadius.circular(12), // rounded corner
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+          SizedBox(
+            height: 150, // Atur tinggi sesuai kebutuhan
+            child: ListView.builder(
+              itemCount: newsList.length,
+              itemBuilder: (context, index) {
+                final news = newsList[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF67DCA8),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      "• ${news['title']}",
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                    ),
+                    onTap: () => _showNewsDialog(news['title']!, news['url']!),
+                  ),
+                );
+              },
+            ),
           ),
-        ],
-      ),
-      child: ListTile(
-        title: Text(
-          "• ${news['title']}",
-          style: const TextStyle(fontSize: 14, color: Colors.white),
-        ),
-        trailing: const Icon(
-          Icons.arrow_forward,
-          color: Colors.white,
-        ),
-        onTap: () => _showNewsDialog(news['title']!, news['url']!),
-      ),
-    );
-  },
-),
-
-),
-
-
-
         ],
       ),
     );
   }
 
+  // Revisi: klik icon Dashboard sekarang ke RiwayatPrediksi
   void _onNavTapped(int index) {
-    if (index == 1) return;
+    if (index == 1) return; // sudah di Home, tidak navigasi apa-apa
     if (index == 0) {
-      Navigator.pushNamed(context, '/detail_prediksi');
+      Navigator.pushNamed(context, '/riwayat_prediksi');
     } else if (index == 2) {
       Navigator.pushNamed(context, '/profile');
     }
@@ -213,7 +204,6 @@ Widget _buildPredictionBox1() {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Header bar
               Row(
                 children: [
                   GestureDetector(
@@ -242,9 +232,7 @@ Widget _buildPredictionBox1() {
                 ],
               ),
               const SizedBox(height: 15),
-              
-              const SizedBox(height: 15),
-              _buildPredictionBox1(),
+              _buildPredictionBox(),
               const SizedBox(height: 15),
               Expanded(child: _buildNewsBox()),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kenali_app/screens/profile_page.dart';
+import 'detail_prediksi.dart'; // atau nama file yang benar
 
 void main() {
   runApp(const KenaliApp());

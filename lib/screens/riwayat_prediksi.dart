@@ -7,16 +7,11 @@ import 'package:intl/intl.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
-
-  final now = DateTime.now();
-  final formatted = DateFormat('EEEE, d MMMM yyyy – HH:mm', 'id_ID').format(now);
-  print(formatted); // Sekarang tidak error
-
-  runApp(const riwayatprediksi());
+  runApp(const RiwayatPrediksiApp());
 }
 
-class riwayatprediksi extends StatelessWidget {
-  const riwayatprediksi({super.key});
+class RiwayatPrediksiApp extends StatelessWidget {
+  const RiwayatPrediksiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,36 +57,42 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
     super.dispose();
   }
 
+  void _onNavTapped(int index) {
+    switch (index) {
+      case 1:
+        Navigator.pushNamed(context, '/home'); // Navigate to HomeScreen
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/profile'); // Navigate to ProfilePage
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF67DCA8),
-      ),
-      home: Scaffold(
-        backgroundColor: const Color(0xFF67DCA8),
-        body: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              HeaderSection(currentTime: currentTime, currentDate: currentDate),
-              const InfoBox(),
-              const RiwayatListBox(),
-            ],
-          ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color(0xFF64D2A3),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white70,
-          currentIndex: 1,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
+    return Scaffold(
+      backgroundColor: const Color(0xFF67DCA8),
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            HeaderSection(currentTime: currentTime, currentDate: currentDate),
+            const InfoBox(),
+            const RiwayatListBox(),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF64D2A3),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        currentIndex: 1, // Set current index to 1 for RiwayatPrediksi
+        onTap: _onNavTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
+        ],
       ),
     );
   }
