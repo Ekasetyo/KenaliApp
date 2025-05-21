@@ -27,7 +27,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   String areaValue = '';
   String rokokValue = '';
 
-  String predictionResult = '';
   bool isLoading = false;
 
   bool _isNumberValid(String val) {
@@ -93,7 +92,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   Future<void> _performDetection() async {
     setState(() {
       isLoading = true;
-      predictionResult = '';
     });
 
     final prefs = await SharedPreferences.getInstance();
@@ -123,9 +121,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
 
       final result = jsonDecode(response.body);
       if (response.statusCode == 200 && result['status'] == 'success') {
-        setState(() {
-          predictionResult = result['prediction'];
-        });
+        _showResultDialog(result['prediction']);
         _showSnackBar('Deteksi berhasil!');
       } else {
         _showSnackBar(result['message'] ?? 'Terjadi kesalahan!');
@@ -135,6 +131,29 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
     } finally {
       setState(() => isLoading = false);
     }
+  }
+
+  void _showResultDialog(String result) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Hasil Prediksi',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          result,
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _customCardInput({required Widget child}) {
@@ -211,14 +230,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
                         ),
                       ),
               ),
-              const SizedBox(height: 20),
-              if (predictionResult.isNotEmpty)
-                Center(
-                  child: Text(
-                    'Hasil: $predictionResult',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-                  ),
-                ),
             ],
           ),
         ),

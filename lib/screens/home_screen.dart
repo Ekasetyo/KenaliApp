@@ -7,7 +7,6 @@ import 'menu_prediksi.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -44,31 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _showNewsDialog(String title, String url) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextButton(
-          onPressed: () async {
-            final uri = Uri.parse(url);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            }
-          },
-          child: const Text(
-            "Baca Selengkapnya",
-            style: TextStyle(color: Colors.blue),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tidak dapat membuka link')),
+      );
+    }
   }
 
   Widget _buildRealTimeClock() {
@@ -103,28 +86,52 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPredictionBox() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MenuPrediksi()),
-        );
-      },
-      child: Container(
-        width: double.infinity,
-        height: 111,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF9F7F8),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Text(
-          'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9F7F8),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(16), // dikurangi dari 20 ke 16
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Prediksi Dibuat: $predictionCount',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 150,
+            height: 36, // dikurangi agar tidak overflow
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MenuPrediksi()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF67DCA8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // lebih kecil radiusnya
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                elevation: 2,
+              ),
+              child: const Text(
+                'Lihat Detail',
+                style: TextStyle(
+                  fontSize: 14, // dikurangi
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -145,48 +152,61 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            height: 150, // Atur tinggi sesuai kebutuhan
-            child: ListView.builder(
-              itemCount: newsList.length,
-              itemBuilder: (context, index) {
-                final news = newsList[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF67DCA8),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    title: Text(
+          Column(
+            children: newsList.map((news) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 14),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF67DCA8),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       "• ${news['title']}",
-                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
-                    trailing: const Icon(
-                      Icons.arrow_forward,
-                      color: Colors.white,
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 34,
+                      child: ElevatedButton(
+                        onPressed: () => _launchURL(news['url']!),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 2,
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: const Text(
+                          'Baca Selengkapnya',
+                          style: TextStyle(
+                            color: Color(0xFF67DCA8),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     ),
-                    onTap: () => _showNewsDialog(news['title']!, news['url']!),
-                  ),
-                );
-              },
-            ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
     );
   }
 
-  // Revisi: klik icon Dashboard sekarang ke RiwayatPrediksi
   void _onNavTapped(int index) {
-    if (index == 1) return; // sudah di Home, tidak navigasi apa-apa
+    if (index == 1) return;
     if (index == 0) {
       Navigator.pushNamed(context, '/riwayat_prediksi');
     } else if (index == 2) {
@@ -251,72 +271,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
 }
