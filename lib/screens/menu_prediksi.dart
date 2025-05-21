@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'editable_dropdown_field.dart'; // sesuaikan lokasi file jika berbeda
-import 'home_screen.dart'; // pastikan file home_screen.dart ada dan berisi HomeScreen widget
+import 'editable_dropdown_field.dart';
+import 'home_screen.dart';
 
 void main() {
   runApp(MenuPrediksiPage());
@@ -10,11 +10,13 @@ class MenuPrediksiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Aplikasi Prediksi Stroke',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
       ),
-      home: MenuPrediksi(), // Awal aplikasi diarahkan ke MenuPrediksi
+      home: MenuPrediksi(),
     );
   }
 }
@@ -24,75 +26,6 @@ class MenuPrediksi extends StatefulWidget {
 
   @override
   State<MenuPrediksi> createState() => _MenuPrediksiState();
-}
-
-// Widget untuk input manual angka saja (textfield)
-class ManualInputField extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool isNumber;
-  final void Function(String) onChanged;
-
-  const ManualInputField({
-    super.key,
-    required this.label,
-    required this.value,
-    this.isNumber = false,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      controller: TextEditingController(text: value),
-      onChanged: onChanged,
-    );
-  }
-}
-
-// Widget untuk dropdown tanpa input manual
-class DropdownOnlyField extends StatelessWidget {
-  final String label;
-  final String value;
-  final List<String> options;
-  final void Function(String?) onChanged;
-
-  const DropdownOnlyField({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.options,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          value: value.isEmpty ? null : value,
-          hint: Text('Pilih $label'),
-          items: options.map((opt) {
-            return DropdownMenuItem(
-              value: opt,
-              child: Text(opt),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
 }
 
 class _MenuPrediksiState extends State<MenuPrediksi> {
@@ -155,24 +88,33 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       return;
     }
 
-    print('Usia: $usiaValue');
-    print('BMI: $bmiValue');
-    print('Kadar gula darah: $gulaValue');
-    print('Hipertensi: $hipertensiValue');
-    print('Riwayat jantung: $jantungValue');
-    print('Status menikah: $menikahValue');
-    print('Pekerjaan: $pekerjaanValue');
-    print('Area tinggal: $areaValue');
-    print('Perokok: $rokokValue');
-    print('Jenis kelamin: $genderValue');
-
     _showSnackBar('Data valid, proses prediksi dapat dilakukan.');
+  }
+
+  Widget _customCardInput({required Widget child}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+            offset: Offset(0, 2),
+          )
+        ],
+      ),
+      child: child,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFB2F7C1),
+      backgroundColor: const Color(0xFFE8FDF2),
       appBar: AppBar(
         backgroundColor: const Color(0xFF6DE39D),
         leading: IconButton(
@@ -189,126 +131,159 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
           'Prediksi Dini',
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold, // Tambahkan ini agar bold
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child: ListView(
-            padding: const EdgeInsets.only(top: 40),  // <-- padding atas tambahan supaya tidak ketutup
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DropdownOnlyField(
-                label: 'Jenis kelamin',
-                value: genderValue,
-                options: ['perempuan', 'laki-laki'],
-                onChanged: (val) => setState(() => genderValue = val ?? ''),
-              ),
-              const SizedBox(height: 12),
-
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Usia",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+              const Text(
+                'Lengkapi Data Anda',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                controller: usiaController,
               ),
               const SizedBox(height: 12),
-
-              DropdownOnlyField(
-                label: 'Hipertensi',
-                value: hipertensiValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => hipertensiValue = val ?? ''),
-              ),
-              const SizedBox(height: 12),
-
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Kadar gula darah",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Jenis kelamin',
+                  value: genderValue,
+                  options: ['perempuan', 'laki-laki'],
+                  onChanged: (val) =>
+                      setState(() => genderValue = val ?? ''),
                 ),
-                controller: gulaDarahController,
               ),
-              const SizedBox(height: 12),
-
-              DropdownOnlyField(
-                label: 'Riwayat Penyakit jantung',
-                value: jantungValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => jantungValue = val ?? ''),
-              ),
-              const SizedBox(height: 12),
-
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "BMI",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+              _customCardInput(
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  controller: usiaController,
+                  decoration: const InputDecoration(
+                    labelText: 'Usia',
+                    border: InputBorder.none,
+                  ),
                 ),
-                controller: bmiController,
               ),
-              const SizedBox(height: 12),
-
-              DropdownOnlyField(
-                label: 'Status menikah',
-                value: menikahValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => menikahValue = val ?? ''),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Hipertensi',
+                  value: hipertensiValue,
+                  options: ['tidak', 'iya'],
+                  onChanged: (val) =>
+                      setState(() => hipertensiValue = val ?? ''),
+                ),
               ),
-              const SizedBox(height: 12),
-
-              DropdownOnlyField(
-                label: 'Pekerjaan',
-                value: pekerjaanValue,
-                options: ['tidak bekerja', 'anak-anak', 'PNS', 'wiraswasta'],
-                onChanged: (val) => setState(() => pekerjaanValue = val ?? ''),
+              _customCardInput(
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  controller: gulaDarahController,
+                  decoration: const InputDecoration(
+                    labelText: 'Kadar gula darah',
+                    border: InputBorder.none,
+                  ),
+                ),
               ),
-              const SizedBox(height: 12),
-
-              DropdownOnlyField(
-                label: 'Area tempat tinggal',
-                value: areaValue,
-                options: ['pedesaan', 'perkotaan'],
-                onChanged: (val) => setState(() => areaValue = val ?? ''),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Riwayat Penyakit jantung',
+                  value: jantungValue,
+                  options: ['tidak', 'iya'],
+                  onChanged: (val) =>
+                      setState(() => jantungValue = val ?? ''),
+                ),
               ),
-              const SizedBox(height: 12),
-
-              DropdownOnlyField(
-                label: 'Perokok',
-                value: rokokValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => rokokValue = val ?? ''),
+              _customCardInput(
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  controller: bmiController,
+                  decoration: const InputDecoration(
+                    labelText: 'BMI',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Status menikah',
+                  value: menikahValue,
+                  options: ['tidak', 'iya'],
+                  onChanged: (val) =>
+                      setState(() => menikahValue = val ?? ''),
+                ),
+              ),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Pekerjaan',
+                  value: pekerjaanValue,
+                  options: [
+                    'tidak bekerja',
+                    'anak-anak',
+                    'PNS',
+                    'wiraswasta'
+                  ],
+                  onChanged: (val) =>
+                      setState(() => pekerjaanValue = val ?? ''),
+                ),
+              ),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Area tempat tinggal',
+                  value: areaValue,
+                  options: ['pedesaan', 'perkotaan'],
+                  onChanged: (val) =>
+                      setState(() => areaValue = val ?? ''),
+                ),
+              ),
+              _customCardInput(
+                child: DropdownOnlyField(
+                  label: 'Perokok',
+                  value: rokokValue,
+                  options: ['tidak', 'iya'],
+                  onChanged: (val) =>
+                      setState(() => rokokValue = val ?? ''),
+                ),
               ),
               const SizedBox(height: 24),
-
               Center(
-                child: ElevatedButton(
-                  onPressed: _validateAndPredict,
-                  child: const Text(
-                    'Prediksi',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6DE39D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                child: GestureDetector(
+                  onTap: _validateAndPredict,
+                  child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 200, vertical: 25),
+                        horizontal: 80, vertical: 18),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF6DE39D), Color(0xFF48C78E)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'Prediksi',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
