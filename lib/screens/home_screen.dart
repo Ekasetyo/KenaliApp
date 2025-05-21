@@ -4,7 +4,6 @@ import 'package:kenali_app/screens/PilihDetail.dart';
 import 'package:kenali_app/screens/menu_prediksi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'detail_prediksi.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -139,7 +138,7 @@ Widget _buildPredictionBox1() {
     onTap: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) =>  MenuDeteksiPage()),
+        MaterialPageRoute(builder: (context) =>  MenuDeteksi()),
       );
     },
     child: Container(
