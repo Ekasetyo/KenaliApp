@@ -1,5 +1,5 @@
 // auth_data.dart
-library auth_data;
+library;
 
 String registeredEmail = '';
 String registeredUsername = '';

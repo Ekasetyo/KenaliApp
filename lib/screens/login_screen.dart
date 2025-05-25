@@ -11,7 +11,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailOrUsernameController = TextEditingController();
+  final TextEditingController emailOrUsernameController =
+      TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscurePassword = true;
 
@@ -22,7 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (emailOrUsernameController.text.isEmpty || passwordController.text.isEmpty) {
+    if (emailOrUsernameController.text.isEmpty ||
+        passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email dan Password wajib diisi')),
       );
@@ -48,15 +50,31 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('auth_token', responseData['token']);
         await prefs.setString('user_data', jsonEncode(responseData['user']));
 
-         print('User Data: ${jsonEncode(responseData['user'])}');
+        print('User Data: ${jsonEncode(responseData['user'])}');
 
         String userStatus = responseData['user']['status'] ?? '';
 
         if (userStatus == 'user') {
-          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+          // Tampilkan animasi loading
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+
+          // Simulasi delay sebelum navigasi
+          await Future.delayed(const Duration(seconds: 2));
+
+          // Tutup dialog dan navigasi ke halaman home
+          Navigator.of(context).pop(); // tutup dialog
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/home', (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Buat akun terlebih dahulu di website Kenali')),
+            const SnackBar(
+                content: Text('Buat akun terlebih dahulu di website Kenali')),
           );
         }
       } else {
@@ -97,7 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(24.0),
                 child: Container(
                   width: 340,
-                  padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(28),
@@ -145,7 +164,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icons.lock,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Colors.grey,
                           ),
                           onPressed: _togglePasswordVisibility,
