@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // Import HTTP package
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,15 +19,29 @@ class _HomeScreenState extends State<HomeScreen> {
   String _username = 'Pengguna';
   final carousel_slider.CarouselSliderController _controller = carousel_slider.CarouselSliderController();
   int _currentArticleIndex = 0;
-  
-  // List untuk menyimpan artikel
-  List<Map<String, dynamic>> newsList = [];
+
+  final List<Map<String, String>> newsList = [
+    {
+      "title": "Kenali Gejala Stroke Sejak Dini",
+      "description": "Stroke adalah kondisi medis serius yang terjadi ketika pasokan darah ke otak terganggu.",
+      "url": "https://www.example.com"
+    },
+    {
+      "title": "Faktor Risiko Stroke",
+      "description": "Faktor risiko stroke termasuk tekanan darah tinggi, merokok, dan diabetes.",
+      "url": "https://www.example.com"
+    },
+    {
+      "title": "Pola Makan Sehat Cegah Stroke",
+      "description": "Makanan tinggi lemak trans dapat meningkatkan risiko stroke.",
+      "url": "https://www.sehatq.com/artikel/makanan-penyebab-stroke"
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
-    _fetchArticles(); // Ambil artikel saat inisialisasi
   }
 
   Future<void> _loadUserData() async {
@@ -39,28 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _username = userData['name'] ?? 'Pengguna';
       });
-    }
-  }
-
-  Future<void> _fetchArticles() async {
-    try {
-      final response = await http.post(Uri.parse('http://127.0.0.1:8000/api/artikel')); // Ganti URL sesuai
-      if (response.statusCode == 200) {
-        final List<dynamic> articles = jsonDecode(response.body)['data'];
-        setState(() {
-          newsList = articles.take(5).map((article) {
-            return {
-              "title": article['judul'],
-              "description": article['deskripsi'],
-              "url": article['sumber'],
-            };
-          }).toList();
-        });
-      } else {
-        print('Gagal mengambil artikel: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error: $e');
     }
   }
 
@@ -167,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNewsCard(Map<String, dynamic> news) {
+  Widget _buildNewsCard(Map<String, String> news) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -316,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 25),
               _buildDetectionCard(),
               const SizedBox(height: 25),
-              _buildNewsCarousel(), // Menampilkan carousel artikel
+              _buildNewsCarousel(),
             ],
           ),
         ),

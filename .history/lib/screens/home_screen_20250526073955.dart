@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }).toList();
         });
       } else {
+        // Tangani kesalahan
         print('Gagal mengambil artikel: ${response.statusCode}');
       }
     } catch (e) {

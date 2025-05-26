@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchArticles() async {
     try {
-      final response = await http.post(Uri.parse('http://127.0.0.1:8000/api/artikel')); // Ganti URL sesuai
+      final response = await http.post(Uri.parse('http://yourdomain.com/api/artikel')); // Ganti URL sesuai
       if (response.statusCode == 200) {
         final List<dynamic> articles = jsonDecode(response.body)['data'];
         setState(() {
@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }).toList();
         });
       } else {
+        // Tangani kesalahan
         print('Gagal mengambil artikel: ${response.statusCode}');
       }
     } catch (e) {
