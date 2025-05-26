@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDetectionCard() {
+  Widget _buildPredictionBox() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -112,56 +112,18 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        height: 111,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFFF9F7F8),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Deteksi Dini Stroke',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2A9A9E),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Ketahui risiko stroke Anda dengan melakukan deteksi dini',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF67DCA8),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Text(
-                  'KLIK DISINI UNTUK MEMULAI DETEKSI',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          'Prediksi Dibuat: $predictionCount\nKlik untuk melihat detail',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -173,100 +135,56 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Informasi tentang Stroke',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 150, // Atur tinggi sesuai kebutuhan
+            child: ListView.builder(
+              itemCount: newsList.length,
+              itemBuilder: (context, index) {
+                final news = newsList[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF67DCA8),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      "• ${news['title']}",
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                    ),
+                    onTap: () => _showNewsDialog(news['title']!, news['url']!),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              news['title'] ?? '',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              news['description'] ?? '',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => _launchURL(news['url'] ?? ''),
-              child: const Text(
-                'Baca Selengkapnya',
-                style: TextStyle(color: Color(0xFF2A9A9E)),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
-  Widget _buildNewsCarousel() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 8, bottom: 8),
-          child: Text(
-            'Artikel Kesehatan',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        carousel_slider.CarouselSlider(
-          carouselController: _controller,
-          options: carousel_slider.CarouselOptions(
-            height: 280,
-            autoPlay: true,
-            enlargeCenterPage: true,
-            viewportFraction: 0.8,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _currentArticleIndex = index;
-              });
-            },
-          ),
-          items: newsList.map((news) => _buildNewsCard(news)).toList(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: newsList.asMap().entries.map((entry) {
-            return Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _currentArticleIndex == entry.key
-                    ? Colors.white
-                    : Colors.white.withOpacity(0.4),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
+  // Revisi: klik icon Dashboard sekarang ke RiwayatPrediksi
   void _onNavTapped(int index) {
-    if (index == 1) return;
     if (index == 1) return;
     if (index == 0) {
       Navigator.pushNamed(context, '/riwayat_prediksi');

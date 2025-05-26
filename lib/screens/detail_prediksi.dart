@@ -21,7 +21,7 @@ class KenaliApp extends StatelessWidget {
         '/': (context) => const MenuBeranda(),
         '/profile': (context) => const ProfilePage(),
         '/detail_prediksi': (context) => const DetailPrediksi(),
-        '/detail_transaksi': (context) => const DetailTransaksi(),
+        // '/detail_transaksi': (context) => const DetailTransaksi(),
       },
     );
   }

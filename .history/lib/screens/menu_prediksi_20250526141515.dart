@@ -197,7 +197,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 130, 130, 130).withOpacity(0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

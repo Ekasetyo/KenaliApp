@@ -56,22 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         String userStatus = responseData['user']['status'] ?? '';
 
         if (userStatus == 'user') {
-          // Tampilkan animasi loading
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-
-          // Simulasi delay sebelum navigasi
-          await Future.delayed(const Duration(seconds: 2));
-
-          // Tutup dialog dan navigasi ke halaman home
-          Navigator.of(context).pop(); // tutup dialog
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/home', (route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -232,4 +217,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

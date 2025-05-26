@@ -51,7 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('user_data', jsonEncode(responseData['user']));
 
         print('User Data: ${jsonEncode(responseData['user'])}');
-        print('User Data: ${jsonEncode(responseData['user'])}');
 
         String userStatus = responseData['user']['status'] ?? '';
 
@@ -70,8 +69,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // Tutup dialog dan navigasi ke halaman home
           Navigator.of(context).pop(); // tutup dialog
+<<<<<<< HEAD
           Navigator.of(context)
               .pushNamedAndRemoveUntil('/home', (route) => false);
+=======
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+>>>>>>> 3353a8bdd85f8dc2d51c1a886a56b4a10b4953eb
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -232,4 +235,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

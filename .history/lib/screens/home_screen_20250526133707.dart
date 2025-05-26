@@ -267,7 +267,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onNavTapped(int index) {
     if (index == 1) return;
-    if (index == 1) return;
     if (index == 0) {
       Navigator.pushNamed(context, '/riwayat_prediksi');
     } else if (index == 2) {

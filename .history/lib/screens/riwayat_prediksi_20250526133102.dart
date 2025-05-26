@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -527,13 +529,40 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
     switch (index) {
       case 1:
         Navigator.pushNamed(context, '/home');
-        Navigator.pushNamed(context, '/home');
         break;
       case 2:
         Navigator.pushNamed(context, '/profile');
-        Navigator.pushNamed(context, '/profile');
         break;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF67DCA8),
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            HeaderSection(currentTime: currentTime, currentDate: currentDate),
+            const InfoBox(),
+            const RiwayatListBox(),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF64D2A3),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        currentIndex: 1, // Set current index to 1 for RiwayatPrediksi
+        onTap: _onNavTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
+        ],
+      ),
+    );
   }
 }
 
@@ -617,6 +646,71 @@ class InfoBox extends StatelessWidget {
           fontSize: 15,
           fontWeight: FontWeight.w600,
         ),
+      ),
+    );
+  }
+}
+
+class RiwayatListBox extends StatelessWidget {
+  const RiwayatListBox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Riwayat Prediksi',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ListView.builder(
+            itemCount: 50,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF67DCA8),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Prediksi ${index + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Text(
+                      'klik untuk melihat detail',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 6,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

@@ -62,6 +62,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
     return val == 'iya' ? 1 : 0;
   }
 
+  // New function to reset all input fields
   void _resetForm() {
     setState(() {
       usiaController.clear();
@@ -197,7 +198,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 130, 130, 130).withOpacity(0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -211,7 +212,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF67DCA8),
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),

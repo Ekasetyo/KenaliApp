@@ -62,21 +62,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
     return val == 'iya' ? 1 : 0;
   }
 
-  void _resetForm() {
-    setState(() {
-      usiaController.clear();
-      bmiController.clear();
-      gulaDarahController.clear();
-      genderValue = '';
-      hipertensiValue = '';
-      jantungValue = '';
-      menikahValue = '';
-      pekerjaanValue = '';
-      areaValue = '';
-      rokokValue = '';
-    });
-  }
-
   Future<void> _validateAndConfirm() async {
     final usia = usiaController.text.trim();
     final bmi = bmiController.text.trim();
@@ -109,8 +94,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Tidak')),
           TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Ya')),
+              onPressed: () => Navigator.pop(context, true), child: const Text('Ya')),
         ],
       ),
     );
@@ -177,10 +161,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _resetForm(); // Call reset form after dialog is closed
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text('Tutup'),
           ),
         ],
@@ -197,7 +178,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 130, 130, 130).withOpacity(0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -211,7 +192,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF67DCA8),
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
