@@ -40,7 +40,7 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
       ),
       body: Column(
         children: [
-          if (userName != null)
+          if (userName != null && currentTime != null && currentDate != null)
             HeaderSection(
               currentTime: currentTime,
               currentDate: currentDate,

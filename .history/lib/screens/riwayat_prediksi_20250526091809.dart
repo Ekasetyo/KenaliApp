@@ -23,65 +23,6 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
   bool hasError = false;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Riwayat Prediksi',
-          style: TextStyle(
-            color: Color(0xFF45BF8C),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF45BF8C)),
-      ),
-      body: Column(
-        children: [
-          if (userName != null)
-            HeaderSection(
-              currentTime: currentTime,
-              currentDate: currentDate,
-              userName: userName ?? '',
-            ),
-          InfoBox(predictionCount: riwayatList.length),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : hasError
-                    ? const Center(child: Text('Terjadi kesalahan saat memuat data'))
-                    : riwayatList.isEmpty
-                        ? const Center(child: Text('Belum ada riwayat prediksi'))
-                        : _buildRiwayatList(),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: const Color(0xFF45BF8C),
-        unselectedItemColor: Colors.grey,
-        onTap: _onNavTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
   void initState() {
     super.initState();
     _updateDateTime();
@@ -322,86 +263,124 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
     );
   }
 
-  Widget _buildRiwayatList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: riwayatList.length,
-      itemBuilder: (context, index) {
-        final item = riwayatList[index];
-        final prediction = item['prediction']?.toString();
-        final isRisky = _isRiskyPrediction(prediction);
-        final isSafe = _isSafePrediction(prediction);
-        
-        Color textColor = Colors.black;
-        Color iconColor = Colors.grey;
-        IconData icon = Icons.help_outline;
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-        if (isRisky) {
-          textColor = Colors.red;
-          iconColor = Colors.red;
-          icon = Icons.warning;
-        } else if (isSafe) {
-          textColor = Colors.green;
-          iconColor = Colors.green;
-          icon = Icons.check_circle;
-        }
+    if (hasError) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Riwayat Prediksi'),
+        ),
+        body: const Center(
+          child: Text('Terjadi kesalahan. Silakan coba lagi.'),
+        ),
+      );
+    }
 
-        return GestureDetector(
-          onTap: () => _showDetailRiwayat(context, item),
-          child: Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(icon, color: iconColor),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Hasil: ${prediction ?? 'Tidak ada hasil'}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Riwayat Prediksi'),
+      ),
+      body: Column(
+        children: [
+          HeaderSection(
+            currentTime: currentTime,
+            currentDate: currentDate,
+            userName: userName ?? '-',
+          ),
+          InfoBox(predictionCount: riwayatList.length),
+          const SizedBox(height: 10),
+          Expanded(
+            child: riwayatList.isEmpty
+                ? const Center(child: Text('Belum ada riwayat prediksi.'))
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: riwayatList.length,
+                    itemBuilder: (context, index) {
+                      final item = riwayatList[index];
+                      final prediction = item['prediction']?.toString();
+                      final isRisky = _isRiskyPrediction(prediction);
+                      final isSafe = _isSafePrediction(prediction);
+
+                      Color textColor = Colors.black;
+                      Color iconColor = Colors.grey;
+                      IconData icon = Icons.help_outline;
+
+                      if (isRisky) {
+                        textColor = Colors.red;
+                        iconColor = Colors.red;
+                        icon = Icons.warning;
+                      } else if (isSafe) {
+                        textColor = Colors.green;
+                        iconColor = Colors.green;
+                        icon = Icons.check_circle;
+                      }
+
+                      return GestureDetector(
+                        onTap: () => _showDetailRiwayat(context, item),
+                        child: Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(icon, color: iconColor),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Hasil: ${prediction ?? 'Tidak ada hasil'}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: textColor,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () => _confirmDeleteRiwayat(context, item['_id']),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Tanggal: ${DateFormat('dd MMM yyyy HH:mm', 'id_ID').format(DateTime.parse(item['created_at']))}',
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Usia: ${item['age']?.toString() ?? '-'} tahun',
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _confirmDeleteRiwayat(context, item['_id']),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tanggal: ${DateFormat('dd MMM yyyy HH:mm', 'id_ID').format(DateTime.parse(item['created_at']))}',
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Usia: ${item['age']?.toString() ?? '-'} tahun',
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -522,8 +501,7 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
       default: return residence.toString();
     }
   }
-
-  void _onNavTapped(int index) {
+}
     switch (index) {
       case 1:
         Navigator.pushNamed(context, '/home');

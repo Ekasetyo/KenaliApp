@@ -23,65 +23,6 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
   bool hasError = false;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Riwayat Prediksi',
-          style: TextStyle(
-            color: Color(0xFF45BF8C),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF45BF8C)),
-      ),
-      body: Column(
-        children: [
-          if (userName != null)
-            HeaderSection(
-              currentTime: currentTime,
-              currentDate: currentDate,
-              userName: userName ?? '',
-            ),
-          InfoBox(predictionCount: riwayatList.length),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : hasError
-                    ? const Center(child: Text('Terjadi kesalahan saat memuat data'))
-                    : riwayatList.isEmpty
-                        ? const Center(child: Text('Belum ada riwayat prediksi'))
-                        : _buildRiwayatList(),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: const Color(0xFF45BF8C),
-        unselectedItemColor: Colors.grey,
-        onTap: _onNavTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
   void initState() {
     super.initState();
     _updateDateTime();

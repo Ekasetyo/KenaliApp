@@ -23,65 +23,6 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
   bool hasError = false;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Riwayat Prediksi',
-          style: TextStyle(
-            color: Color(0xFF45BF8C),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF45BF8C)),
-      ),
-      body: Column(
-        children: [
-          if (userName != null)
-            HeaderSection(
-              currentTime: currentTime,
-              currentDate: currentDate,
-              userName: userName ?? '',
-            ),
-          InfoBox(predictionCount: riwayatList.length),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : hasError
-                    ? const Center(child: Text('Terjadi kesalahan saat memuat data'))
-                    : riwayatList.isEmpty
-                        ? const Center(child: Text('Belum ada riwayat prediksi'))
-                        : _buildRiwayatList(),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: const Color(0xFF45BF8C),
-        unselectedItemColor: Colors.grey,
-        onTap: _onNavTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
   void initState() {
     super.initState();
     _updateDateTime();
@@ -322,6 +263,50 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
     );
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF2FDF6),
+      body: SafeArea(
+        child: Column(
+          children: [
+            HeaderSection(
+              currentTime: currentTime,
+              currentDate: currentDate,
+              userName: userName ?? 'User Kenali',
+            ),
+            InfoBox(predictionCount: riwayatList.length),
+            Expanded(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : hasError
+                      ? const Center(child: Text('Gagal memuat data'))
+                      : riwayatList.isEmpty
+                          ? const Center(
+                              child: Text('Tidak ada riwayat ditemukan'))
+                          : _buildRiwayatList(),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF45BF8C),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        currentIndex: 1,
+        onTap: _onNavTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history), label: 'Riwayat'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline), label: 'Profil'),
+        ],
+      ),
+    );
+  }
+
   Widget _buildRiwayatList() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -374,10 +359,6 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
                           ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _confirmDeleteRiwayat(context, item['_id']),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -405,81 +386,16 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
     );
   }
 
-  void _confirmDeleteRiwayat(BuildContext context, String id) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Konfirmasi Hapus'),
-          content: const Text('Apakah Anda yakin ingin menghapus riwayat ini?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-              },
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-                _deleteRiwayat(id); // Panggil fungsi hapus
-              },
-              child: const Text('Hapus'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _deleteRiwayat(String id) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('http://127.0.0.1:8000/api/riwayat/$id'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          riwayatList.removeWhere((item) => item['_id'] == id);
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Riwayat berhasil dihapus'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal menghapus riwayat'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Terjadi kesalahan'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
   String _mapGender(dynamic sex) {
-    if (sex == null) return '-';
-    if (sex.toString() == '1') return 'Laki-laki';
-    if (sex.toString() == '0') return 'Perempuan';
-    switch (sex.toString().toLowerCase()) {
-      case 'male': return 'Laki-laki';
-      case 'female': return 'Perempuan';
-      default: return sex.toString();
-    }
+  if (sex == null) return '-';
+  if (sex.toString() == '1') return 'Laki-laki';
+  if (sex.toString() == '0') return 'Perempuan';
+  switch (sex.toString().toLowerCase()) {
+    case 'male': return 'Laki-laki';
+    case 'female': return 'Perempuan';
+    default: return sex.toString();
   }
+}
 
   String _mapBool(dynamic value) {
     if (value == null) return '-';
@@ -494,34 +410,34 @@ class _RiwayatPrediksiState extends State<RiwayatPrediksi> {
   }
 
   String _mapWorkType(dynamic workType) {
-    if (workType == null) return '-';
-    switch (workType.toString()) {
-      case '0': return 'Tidak Bekerja';
-      case '1': return 'Anak-anak';
-      case '2': return 'PNS';
-      case '3': return 'Wiraswasta';
-      default:
-        switch (workType.toString().toLowerCase()) {
-          case 'private': return 'Swasta';
-          case 'self-employed': return 'Wiraswasta';
-          case 'children': return 'Anak-anak';
-          case 'govt_job': return 'PNS';
-          case 'never_worked': return 'Belum Pernah Bekerja';
-          default: return workType.toString();
-        }
-    }
+  if (workType == null) return '-';
+  switch (workType.toString()) {
+    case '0': return 'Tidak Bekerja';
+    case '1': return 'Anak-anak';
+    case '2': return 'PNS';
+    case '3': return 'Wiraswasta';
+    default:
+      switch (workType.toString().toLowerCase()) {
+        case 'private': return 'Swasta';
+        case 'self-employed': return 'Wiraswasta';
+        case 'children': return 'Anak-anak';
+        case 'govt_job': return 'PNS';
+        case 'never_worked': return 'Belum Pernah Bekerja';
+        default: return workType.toString();
+      }
   }
+}
 
   String _mapResidence(dynamic residence) {
-    if (residence == null) return '-';
-    if (residence.toString() == '1') return 'Perkotaan';
-    if (residence.toString() == '0') return 'Pedesaan';
-    switch (residence.toString().toLowerCase()) {
-      case 'urban': return 'Perkotaan';
-      case 'rural': return 'Pedesaan';
-      default: return residence.toString();
-    }
+  if (residence == null) return '-';
+  if (residence.toString() == '1') return 'Perkotaan';
+  if (residence.toString() == '0') return 'Pedesaan';
+  switch (residence.toString().toLowerCase()) {
+    case 'urban': return 'Perkotaan';
+    case 'rural': return 'Pedesaan';
+    default: return residence.toString();
   }
+}
 
   void _onNavTapped(int index) {
     switch (index) {
