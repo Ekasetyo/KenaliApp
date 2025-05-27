@@ -5,7 +5,6 @@ class DropdownOnlyField extends StatelessWidget {
   final String value;
   final List<String> options;
   final void Function(String?) onChanged;
-  final InputDecoration? decoration;
 
   const DropdownOnlyField({
     super.key,
@@ -13,21 +12,20 @@ class DropdownOnlyField extends StatelessWidget {
     required this.value,
     required this.options,
     required this.onChanged,
-    this.decoration,
   });
 
   @override
   Widget build(BuildContext context) {
     return InputDecorator(
-      decoration: decoration ?? const InputDecoration(
-        labelText: '',
-        border: UnderlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isExpanded: true,
           value: value.isEmpty ? null : value,
-          hint: Text(label.isEmpty ? 'Pilih opsi' : label),
+          hint: Text('Pilih $label'),
           items: options.map((opt) {
             return DropdownMenuItem(
               value: opt,

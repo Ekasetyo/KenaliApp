@@ -34,7 +34,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) return; // Pastikan widget masih ada sebelum menggunakan context
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -64,7 +63,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   void _resetForm() {
-    if (!mounted) return; // Pastikan widget masih ada
     setState(() {
       usiaController.clear();
       bmiController.clear();
@@ -151,21 +149,21 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       );
 
       // Tutup dialog loading sebelum menampilkan hasil
-      if (mounted) Navigator.pop(context);
+      Navigator.pop(context);
 
       final result = jsonDecode(response.body);
       if (response.statusCode == 200 && result['status'] == 'success') {
-        if (mounted) _showResultDialog(result['prediction']);
+        _showResultDialog(result['prediction']);
         _showSnackBar('Deteksi berhasil!');
       } else {
         _showSnackBar(result['message'] ?? 'Terjadi kesalahan!');
       }
     } catch (_) {
       // Tutup dialog loading jika terjadi error
-      if (mounted) Navigator.pop(context);
+      Navigator.pop(context);
       _showSnackBar('Gagal terhubung ke server.');
     } finally {
-      if (mounted) setState(() => isLoading = false);
+      setState(() => isLoading = false);
     }
   }
 
@@ -175,7 +173,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Hasil Deteksi',
+          'Hasil Prediksi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Text(result, style: const TextStyle(fontSize: 16)),
@@ -264,7 +262,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
           ),
         ),
         title: const Text(
-          'Menu Deteksi',
+          'Menu Prediksi',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,

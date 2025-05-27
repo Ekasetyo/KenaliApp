@@ -100,128 +100,127 @@ class _ProfilePageState extends State<ProfilePage> {
   void _onNavTapped(int index) {
     if (index == 0) {
       Navigator.pushNamed(context, '/riwayat_prediksi');
-    } else if (index == 1) {
-      Navigator.pushNamed(context, '/home');
     }
-    // Index 2 is Profil, which is the current page, so no action needed
+    // Index 1 is Profil, which is the current page, so no action needed
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ListView(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFB1F2BC),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Selamat Datang,',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _nameController.text.isEmpty ? 'Nama Pengguna' : _nameController.text,
-                      style: const TextStyle(fontSize: 14, color: Colors.black54),
-                    ),
-                  ],
-                ),
+      appBar: AppBar(
+        title: const Text('Profil'),
+        backgroundColor: const Color(0xFF67DCA8),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFB1F2BC),
+                borderRadius: BorderRadius.circular(16),
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'Informasi Pengguna',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              _buildEditableProfileItem(title: 'Nama Lengkap', controller: _nameController, hintText: 'Masukkan nama lengkap Anda'),
-              _buildEditableProfileItem(title: 'Email', controller: _emailController, hintText: 'Masukkan email Anda', enabled: false),
-              _buildEditableProfileItem(title: 'Jenis Kelamin', controller: _genderController, hintText: 'Masukkan jenis kelamin Anda'),
-              _buildEditableProfileItem(title: 'Tanggal Lahir', controller: _birthDateController, hintText: 'Masukkan tanggal lahir Anda (YYYY-MM-DD)'),
-              _buildEditableProfileItem(title: 'Nomor Telepon', controller: _phoneController, hintText: 'Masukkan nomor telepon Anda'),
-              _buildEditableProfileItem(title: 'Alamat', controller: _addressController, hintText: 'Masukkan alamat Anda'),
-              const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveProfileData,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0400FF),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Selamat Datang,',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
-                  child: const Text('Update Informasi', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Ubah Password',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              _buildEditableProfileItem(
-                title: 'Password Lama',
-                controller: _oldPasswordController,
-                hintText: 'Masukkan password lama Anda',
-                obscureText: true,
-              ),
-              _buildEditableProfileItem(
-                title: 'Password Baru',
-                controller: _newPasswordController,
-                hintText: 'Masukkan password baru Anda',
-                obscureText: true,
-              ),
-              _buildEditableProfileItem(
-                title: 'Konfirmasi Password Baru',
-                controller: _confirmPasswordController,
-                hintText: 'Konfirmasi password baru Anda',
-                obscureText: true,
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _savePassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0400FF),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  const SizedBox(height: 8),
+                  Text(
+                    _nameController.text.isEmpty ? 'Nama Pengguna' : _nameController.text,
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
                   ),
-                  child: const Text('Update Password', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Informasi Pengguna',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            _buildEditableProfileItem(title: 'Nama Lengkap', controller: _nameController, hintText: 'Masukkan nama lengkap Anda'),
+            _buildEditableProfileItem(title: 'Email', controller: _emailController, hintText: 'Masukkan email Anda', enabled: false),
+            _buildEditableProfileItem(title: 'Jenis Kelamin', controller: _genderController, hintText: 'Masukkan jenis kelamin Anda'),
+            _buildEditableProfileItem(title: 'Tanggal Lahir', controller: _birthDateController, hintText: 'Masukkan tanggal lahir Anda (YYYY-MM-DD)'),
+            _buildEditableProfileItem(title: 'Nomor Telepon', controller: _phoneController, hintText: 'Masukkan nomor telepon Anda'),
+            _buildEditableProfileItem(title: 'Alamat', controller: _addressController, hintText: 'Masukkan alamat Anda'),
+            const SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: _saveProfileData,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0400FF),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
+                child: const Text('Update Informasi', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'Keluar',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _logout,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  ),
-                  child: const Text('Keluar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Ubah Password',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            _buildEditableProfileItem(
+              title: 'Password Lama',
+              controller: _oldPasswordController,
+              hintText: 'Masukkan password lama Anda',
+              obscureText: true,
+            ),
+            _buildEditableProfileItem(
+              title: 'Password Baru',
+              controller: _newPasswordController,
+              hintText: 'Masukkan password baru Anda',
+              obscureText: true,
+            ),
+            _buildEditableProfileItem(
+              title: 'Konfirmasi Password Baru',
+              controller: _confirmPasswordController,
+              hintText: 'Konfirmasi password baru Anda',
+              obscureText: true,
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: _savePassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0400FF),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
+                child: const Text('Update Password', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Keluar',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: _logout,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('Keluar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF64D2A3),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
-        currentIndex: 2,
+        currentIndex: 1,
         onTap: _onNavTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
         ],
       ),

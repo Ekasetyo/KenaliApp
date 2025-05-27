@@ -34,7 +34,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) return; // Pastikan widget masih ada sebelum menggunakan context
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -64,7 +63,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   void _resetForm() {
-    if (!mounted) return; // Pastikan widget masih ada
     setState(() {
       usiaController.clear();
       bmiController.clear();
@@ -107,7 +105,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   Future<void> _performDetection() async {
-    // Tampilkan dialog loading
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -150,22 +147,18 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
         body: json.encode(body),
       );
 
-      // Tutup dialog loading sebelum menampilkan hasil
-      if (mounted) Navigator.pop(context);
-
       final result = jsonDecode(response.body);
       if (response.statusCode == 200 && result['status'] == 'success') {
-        if (mounted) _showResultDialog(result['prediction']);
+        _showResultDialog(result['prediction']);
         _showSnackBar('Deteksi berhasil!');
       } else {
         _showSnackBar(result['message'] ?? 'Terjadi kesalahan!');
       }
     } catch (_) {
-      // Tutup dialog loading jika terjadi error
-      if (mounted) Navigator.pop(context);
       _showSnackBar('Gagal terhubung ke server.');
     } finally {
-      if (mounted) setState(() => isLoading = false);
+      Navigator.pop(context); // Tutup dialog setelah selesai
+      setState(() => isLoading = false);
     }
   }
 
@@ -175,7 +168,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Hasil Deteksi',
+          'Hasil Prediksi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Text(result, style: const TextStyle(fontSize: 16)),
@@ -186,62 +179,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
               _resetForm();
             },
             child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Menampilkan pop-up panduan
-  void _showGuideDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.info, color: Colors.blue, size: 24),
-            SizedBox(width: 8),
-            Text(
-              'Panduan Untuk Pengisian Data Deteksi',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              // Tempat pengisian panduan
-              Text(
-                '1. Pastikan semua data yang dimasukkan benar dan sesuai dengan kondisi Anda.',
-                style: TextStyle(fontSize: 16, height: 1.5),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '2. Jika ada pertanyaan, hubungi tim support kami.',
-                style: TextStyle(fontSize: 16, height: 1.5),
-              ),
-              // Tambahkan panduan lain di sini jika diperlukan
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Mengerti',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
           ),
         ],
       ),
@@ -264,135 +201,133 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
           ),
         ),
         title: const Text(
-          'Menu Deteksi',
+          'Menu Prediksi',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        actions: [
-          Tooltip(
-            message: 'Mohon baca panduan sebelum melakukan Deteksi',
-            child: IconButton(
-              icon: const Icon(
-                Icons.info_outline,
-                color: Colors.black,
-                size: 24,
-              ),
-              onPressed: _showGuideDialog,
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center, // Hanya teks utama di tengah
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-              child: Text(
-                'Lengkapi Data Anda',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            const Text('Lengkapi Data Anda',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text(
+              'Jenis kelamin',
+              style: TextStyle(fontSize: 14, color: Colors.black),
+            ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: genderValue,
+              options: ['perempuan', 'laki-laki'],
+              onChanged: (val) => setState(() => genderValue = val ?? ''),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Usia',
+              style: TextStyle(fontSize: 14, color: Colors.black),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: usiaController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: 'Masukkan usia Anda',
+                border: UnderlineInputBorder(),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Jenis kelamin',
-                value: genderValue,
-                options: ['perempuan', 'laki-laki'],
-                onChanged: (val) => setState(() => genderValue = val ?? ''),
+            const SizedBox(height: 8),
+            const Text(
+              'Hipertensi',
+              style: TextStyle(fontSize: 14, color: Colors.black),
+            ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: hipertensiValue,
+              options: ['tidak', 'iya'],
+              onChanged: (val) => setState(() => hipertensiValue = val ?? ''),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: gulaDarahController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: 'Masukkan kadar gula darah',
+                border: UnderlineInputBorder(),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: TextField(
-                controller: usiaController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Usia',
-                  hintText: 'Masukkan usia Anda',
-                  border: UnderlineInputBorder(),
-                ),
+            const SizedBox(height: 8),
+            const Text(
+              'Riwayat Penyakit jantung',
+              style: TextStyle(fontSize: 14, color: Colors.black),
+            ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: jantungValue,
+              options: ['tidak', 'iya'],
+              onChanged: (val) => setState(() => jantungValue = val ?? ''),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: bmiController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: 'Masukkan BMI',
+                border: UnderlineInputBorder(),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Hipertensi',
-                value: hipertensiValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => hipertensiValue = val ?? ''),
-              ),
+            const SizedBox(height: 8),
+            const Text(
+              'Status menikah',
+              style: TextStyle(fontSize: 14, color: Colors.black),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: TextField(
-                controller: gulaDarahController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Kadar gula darah',
-                  hintText: 'Masukkan kadar gula darah',
-                  border: UnderlineInputBorder(),
-                ),
-              ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: menikahValue,
+              options: ['tidak', 'iya'],
+              onChanged: (val) => setState(() => menikahValue = val ?? ''),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Riwayat Penyakit jantung',
-                value: jantungValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => jantungValue = val ?? ''),
-              ),
+            const SizedBox(height: 8),
+            const Text(
+              'Pekerjaan',
+              style: TextStyle(fontSize: 14, color: Colors.black),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: TextField(
-                controller: bmiController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'BMI',
-                  hintText: 'Masukkan BMI',
-                  border: UnderlineInputBorder(),
-                ),
-              ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: pekerjaanValue,
+              options: ['tidak bekerja', 'anak-anak', 'PNS', 'wiraswasta'],
+              onChanged: (val) => setState(() => pekerjaanValue = val ?? ''),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Status menikah',
-                value: menikahValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => menikahValue = val ?? ''),
-              ),
+            const SizedBox(height: 8),
+            const Text(
+              'Area tinggal',
+              style: TextStyle(fontSize: 14, color: Colors.black),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Pekerjaan',
-                value: pekerjaanValue,
-                options: ['tidak bekerja', 'anak-anak', 'PNS', 'wiraswasta'],
-                onChanged: (val) => setState(() => pekerjaanValue = val ?? ''),
-              ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: areaValue,
+              options: ['pedesaan', 'perkotaan'],
+              onChanged: (val) => setState(() => areaValue = val ?? ''),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Area tinggal',
-                value: areaValue,
-                options: ['pedesaan', 'perkotaan'],
-                onChanged: (val) => setState(() => areaValue = val ?? ''),
-              ),
+            const SizedBox(height: 8),
+            const Text(
+              'Perokok',
+              style: TextStyle(fontSize: 14, color: Colors.black),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Perokok',
-                value: rokokValue,
-                options: ['tidak', 'iya'],
-                onChanged: (val) => setState(() => rokokValue = val ?? ''),
-              ),
+            const SizedBox(height: 8),
+            DropdownOnlyField(
+              label: '',
+              value: rokokValue,
+              options: ['tidak', 'iya'],
+              onChanged: (val) => setState(() => rokokValue = val ?? ''),
             ),
             const SizedBox(height: 16),
             SizedBox(
