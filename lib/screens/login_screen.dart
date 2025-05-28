@@ -10,11 +10,38 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailOrUsernameController =
-      TextEditingController();
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+  final TextEditingController emailOrUsernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscurePassword = true;
+
+  late AnimationController _popupController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _popupController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _popupController, curve: Curves.easeOutBack),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _popupController, curve: Curves.easeIn),
+    );
+    _popupController.forward();
+  }
+
+  @override
+  void dispose() {
+    emailOrUsernameController.dispose();
+    passwordController.dispose();
+    _popupController.dispose();
+    super.dispose();
+  }
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -23,8 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (emailOrUsernameController.text.isEmpty ||
-        passwordController.text.isEmpty) {
+    if (emailOrUsernameController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email dan Password wajib diisi')),
       );
@@ -50,13 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('auth_token', responseData['token']);
         await prefs.setString('user_data', jsonEncode(responseData['user']));
 
-        print('User Data: ${jsonEncode(responseData['user'])}');
-        print('User Data: ${jsonEncode(responseData['user'])}');
-
         String userStatus = responseData['user']['status'] ?? '';
 
         if (userStatus == 'user') {
-          // Tampilkan animasi loading
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -65,17 +87,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
 
-          // Simulasi delay sebelum navigasi
           await Future.delayed(const Duration(seconds: 2));
 
-          // Tutup dialog dan navigasi ke halaman home
-          Navigator.of(context).pop(); // tutup dialog
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/home', (route) => false);
+          Navigator.of(context).pop(); // Tutup dialog
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Buat akun terlebih dahulu di website Kenali')),
+            const SnackBar(content: Text('Buat akun terlebih dahulu di website Kenali')),
           );
         }
       } else {
@@ -88,13 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text('Terjadi kesalahan')),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    emailOrUsernameController.dispose();
-    passwordController.dispose();
-    super.dispose();
   }
 
   @override
@@ -112,90 +123,93 @@ class _LoginScreenState extends State<LoginScreen> {
           GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Container(
-                  width: 340,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Selamat Datang',
-                        style: TextStyle(
-                          color: Color(0xFF2A9A9E),
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Montserrat',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Aplikasi Prediksi Gejala Stroke',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 13,
-                          fontFamily: 'Montserrat',
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      _buildTextField(
-                        controller: emailOrUsernameController,
-                        hintText: 'Email atau Username',
-                        icon: Icons.person,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: passwordController,
-                        hintText: 'Password',
-                        obscureText: _obscurePassword,
-                        icon: Icons.lock,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.grey,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Container(
+                      width: 340,
+                      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
                           ),
-                          onPressed: _togglePasswordVisibility,
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _login,
-                          style: ElevatedButton.styleFrom(
-                            elevation: 4,
-                            backgroundColor: const Color(0xFF66DBA7),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          child: const Text(
-                            'Login',
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Selamat Datang',
                             style: TextStyle(
-                              fontSize: 18,
+                              color: Color(0xFF2A9A9E),
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'Montserrat',
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Aplikasi Prediksi Gejala Stroke',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 13,
+                              fontFamily: 'Montserrat',
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          _buildTextField(
+                            controller: emailOrUsernameController,
+                            hintText: 'Email atau Username',
+                            icon: Icons.person,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: passwordController,
+                            hintText: 'Password',
+                            obscureText: _obscurePassword,
+                            icon: Icons.lock,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                              onPressed: _togglePasswordVisibility,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _login,
+                              style: ElevatedButton.styleFrom(
+                                elevation: 4,
+                                backgroundColor: const Color(0xFF66DBA7),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -232,4 +246,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
