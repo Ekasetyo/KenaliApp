@@ -329,10 +329,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _confirmAndSaveProfile,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -415,10 +415,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _confirmAndSavePassword,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -482,10 +482,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _logout,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
