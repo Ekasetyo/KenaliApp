@@ -76,12 +76,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         await prefs.setString('auth_token', responseData['token']);
         await prefs.setString('user_data', jsonEncode(responseData['user']));
 
-        print('User Data: ${jsonEncode(responseData['user'])}');
-
         String userStatus = responseData['user']['status'] ?? '';
 
         if (userStatus == 'user') {
-          // Tampilkan animasi loading
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -90,11 +87,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             ),
           );
 
-          // Simulasi delay sebelum navigasi
           await Future.delayed(const Duration(seconds: 2));
 
-          // Tutup dialog dan navigasi ke halaman home
-          Navigator.of(context).pop(); // tutup dialog
+          Navigator.of(context).pop(); // Tutup dialog
           Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

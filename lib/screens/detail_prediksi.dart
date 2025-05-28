@@ -28,7 +28,7 @@ class KenaliApp extends StatelessWidget {
 }
 
 class MenuBeranda extends StatelessWidget {
-  const MenuBeranda({Key? key}) : super(key: key);
+  const MenuBeranda({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +77,7 @@ class MenuBeranda extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
@@ -120,7 +121,7 @@ class MenuBeranda extends StatelessWidget {
 }
 
 class DetailPrediksi extends StatelessWidget {
-  const DetailPrediksi({Key? key}) : super(key: key);
+  const DetailPrediksi({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +173,7 @@ class DetailPrediksi extends StatelessWidget {
 }
 
 class DetailTransaksi extends StatelessWidget {
-  const DetailTransaksi({Key? key}) : super(key: key);
+  const DetailTransaksi({super.key});
 
   @override
   Widget build(BuildContext context) {
