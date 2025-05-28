@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.finomaly_app"
+    namespace = "com.kenali.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.finomaly_app"
+        applicationId = "com.kenali.app"
         minSdkVersion 21 // Disarankan untuk meningkatkan ke 21
         targetSdkVersion 33
         versionCode flutter.versionCode
