@@ -48,6 +48,17 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadProfileData();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    // TODO: Implement your build method here.
+    // For now, return a placeholder widget to avoid errors.
+    return Scaffold(
+      body: Center(
+        child: Text('Profile Page'),
+      ),
+    );
+  }
+
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
     final userData = jsonDecode(prefs.getString('user_data') ?? '{}');
@@ -59,6 +70,30 @@ class _ProfilePageState extends State<ProfilePage> {
       _phoneController.text = userData['no_telepon'] ?? '081234569887';
       _addressController.text = userData['alamat'] ?? 'Jl. Polije';
     });
+  }
+
+  Future<void> _savePassword() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+    if (_newPasswordController.text == _confirmPasswordController.text) {
+      // Implementasi update password ke server di sini (misalnya endpoint /update-password)
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password berhasil diperbarui')),
+        );
+      }
+      _oldPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password baru dan konfirmasi tidak cocok')),
+        );
+      }
+    }
+    if (mounted) setState(() => _isLoading = false);
   }
 
   Future<void> _confirmAndSaveProfile() async {
@@ -73,31 +108,24 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Tidak', style: TextStyle(color: Colors.red)),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0400FF),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Ya', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+      ElevatedButton(
+        onPressed: () => Navigator.pop(context, true),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0400FF),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: const Text('Ya', style: TextStyle(color: Colors.white)),
       ),
-    );
+    ],
+  ),
+);
 
-    if (confirm == true) {
-      await _saveProfileData();
-    }
-  }
-
-  Future<void> _saveProfileData() async {
-    if (_isLoading) return;
-
-    setState(() => _isLoading = true);
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userData = jsonDecode(prefs.getString('user_data') ?? '{}');
-      final userId = userData['id'];
+if (confirm == true) {
+  setState(() => _isLoading = true);
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final userData = jsonDecode(prefs.getString('user_data') ?? '{}');
+    final userId = userData['id'];
 
       final response = await http.post(
         Uri.parse('http://127.0.0.1:8000/api/update-profile'),
@@ -168,30 +196,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _savePassword() async {
-    if (_isLoading) return;
-
-    setState(() => _isLoading = true);
-    if (_newPasswordController.text == _confirmPasswordController.text) {
-      // Implementasi update password ke server di sini (misalnya endpoint /update-password)
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password berhasil diperbarui')),
-        );
-      }
-      _oldPasswordController.clear();
-      _newPasswordController.clear();
-      _confirmPasswordController.clear();
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password baru dan konfirmasi tidak cocok')),
-        );
-      }
-    }
-    if (mounted) setState(() => _isLoading = false);
-  }
-
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -260,6 +264,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
+                            fontFamily: 'Montserrat',
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -268,6 +273,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
+                            fontFamily: 'Montserrat',
                           ),
                         ),
                       ],
@@ -293,6 +299,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontFamily: 'Montserrat',
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -329,44 +336,42 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _confirmAndSaveProfile,
+                          icon: const Icon(Icons.update, size: 20, color: Colors.white),
+                          label: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                )
+                              : const Text(
+                                  'Update Informasi',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.black45,
+                            elevation: 5,
                           ).copyWith(
-                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) {
+                                  return Colors.grey;
+                                }
+                                return Colors.transparent;
+                              },
+                            ),
                             foregroundColor: MaterialStateProperty.all(Colors.white),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF0400FF), Color(0xFF00D4FF)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.update, size: 20, color: Colors.white),
-                                const SizedBox(width: 8),
-                                _isLoading
-                                    ? const CircularProgressIndicator(color: Colors.white)
-                                    : const Text(
-                                        'Update Informasi',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                              ],
-                            ),
                           ),
                         ),
                       ),
@@ -392,6 +397,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontFamily: 'Montserrat',
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -415,10 +421,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _confirmAndSavePassword,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -448,46 +454,38 @@ class _ProfilePageState extends State<ProfilePage> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                              ],
+                        child: ElevatedButton.icon(
+                          onPressed: _isLoading ? null : _confirmAndSavePassword,
+                          icon: const Icon(Icons.lock, size: 20, color: Colors.white),
+                          label: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                )
+                              : const Text(
+                                  'Update Password',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.black45,
+                            elevation: 5,
+                          ).copyWith(
+                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                            foregroundColor: MaterialStateProperty.all(Colors.white),
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Seksi Keluar
-              Card(
-                elevation: 4,
-                color: const Color(0xFF2A2A2A),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Keluar',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _logout,
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
                             ),
                           ).copyWith(
                             backgroundColor: MaterialStateProperty.all(Colors.transparent),
@@ -516,6 +514,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
+                                          fontFamily: 'Montserrat',
                                         ),
                                       ),
                               ],
@@ -524,47 +523,38 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF64D2A3),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        currentIndex: 2,
-        onTap: _onNavTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditableProfileItem({
-    required String title,
-    required TextEditingController controller,
-    required String hintText,
-    bool obscureText = false,
-    bool enabled = true,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.white70,
-            ),
+                        child: ElevatedButton.icon(
+                          onPressed: _isLoading ? null : _logout,
+                          icon: const Icon(Icons.logout, size: 20, color: Colors.white),
+                          label: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                )
+                              : const Text(
+                                  'Keluar',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.black45,
+                            elevation: 5,
+                          ).copyWith(
+                            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                            foregroundColor: MaterialStateProperty.all(Colors.white),
+                          ),
+                        ),
+                      ),
           ),
           const SizedBox(height: 8),
           TextField(

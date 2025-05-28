@@ -175,7 +175,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Hasil Deteksi',
+          'Hasil Prediksi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Text(result, style: const TextStyle(fontSize: 16)),
@@ -264,7 +264,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
           ),
         ),
         title: const Text(
-          'Menu Deteksi',
+          'Menu Prediksi',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -423,4 +423,3 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       ),
     );
   }
-}

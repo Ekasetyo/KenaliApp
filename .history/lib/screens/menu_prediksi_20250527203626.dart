@@ -34,7 +34,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) return; // Pastikan widget masih ada sebelum menggunakan context
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -64,7 +63,6 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
   }
 
   void _resetForm() {
-    if (!mounted) return; // Pastikan widget masih ada
     setState(() {
       usiaController.clear();
       bmiController.clear();
@@ -151,21 +149,21 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       );
 
       // Tutup dialog loading sebelum menampilkan hasil
-      if (mounted) Navigator.pop(context);
+      Navigator.pop(context);
 
       final result = jsonDecode(response.body);
       if (response.statusCode == 200 && result['status'] == 'success') {
-        if (mounted) _showResultDialog(result['prediction']);
+        _showResultDialog(result['prediction']);
         _showSnackBar('Deteksi berhasil!');
       } else {
         _showSnackBar(result['message'] ?? 'Terjadi kesalahan!');
       }
     } catch (_) {
       // Tutup dialog loading jika terjadi error
-      if (mounted) Navigator.pop(context);
+      Navigator.pop(context);
       _showSnackBar('Gagal terhubung ke server.');
     } finally {
-      if (mounted) setState(() => isLoading = false);
+      setState(() => isLoading = false);
     }
   }
 
@@ -175,7 +173,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Hasil Deteksi',
+          'Hasil Prediksi',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Text(result, style: const TextStyle(fontSize: 16)),
@@ -264,7 +262,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
           ),
         ),
         title: const Text(
-          'Menu Deteksi',
+          'Menu Prediksi',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -285,7 +283,7 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center, // Hanya teks utama di tengah
+          crossAxisAlignment: CrossAxisAlignment.center, // Mengatur semua elemen ke tengah secara horizontal
           children: [
             const Padding(
               padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
@@ -295,13 +293,27 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Jenis kelamin',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
               child: DropdownOnlyField(
-                label: 'Jenis kelamin',
+                label: '',
                 value: genderValue,
                 options: ['perempuan', 'laki-laki'],
                 onChanged: (val) => setState(() => genderValue = val ?? ''),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Usia',
+                style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
             Padding(
@@ -310,19 +322,32 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
                 controller: usiaController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Usia',
                   hintText: 'Masukkan usia Anda',
                   border: UnderlineInputBorder(),
                 ),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Hipertensi',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
               child: DropdownOnlyField(
-                label: 'Hipertensi',
+                label: '',
                 value: hipertensiValue,
                 options: ['tidak', 'iya'],
                 onChanged: (val) => setState(() => hipertensiValue = val ?? ''),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Kadar gula darah',
+                style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
             Padding(
@@ -331,19 +356,32 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
                 controller: gulaDarahController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Kadar gula darah',
                   hintText: 'Masukkan kadar gula darah',
                   border: UnderlineInputBorder(),
                 ),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Riwayat Penyakit jantung',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
               child: DropdownOnlyField(
-                label: 'Riwayat Penyakit jantung',
+                label: '',
                 value: jantungValue,
                 options: ['tidak', 'iya'],
                 onChanged: (val) => setState(() => jantungValue = val ?? ''),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'BMI',
+                style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
             Padding(
@@ -352,43 +390,70 @@ class _MenuPrediksiState extends State<MenuPrediksi> {
                 controller: bmiController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'BMI',
                   hintText: 'Masukkan BMI',
                   border: UnderlineInputBorder(),
                 ),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Status menikah',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
               child: DropdownOnlyField(
-                label: 'Status menikah',
+                label: '',
                 value: menikahValue,
                 options: ['tidak', 'iya'],
                 onChanged: (val) => setState(() => menikahValue = val ?? ''),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Pekerjaan',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
               child: DropdownOnlyField(
-                label: 'Pekerjaan',
+                label: '',
                 value: pekerjaanValue,
                 options: ['tidak bekerja', 'anak-anak', 'PNS', 'wiraswasta'],
                 onChanged: (val) => setState(() => pekerjaanValue = val ?? ''),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
-              child: DropdownOnlyField(
-                label: 'Area tinggal',
-                value: areaValue,
-                options: ['pedesaan', 'perkotaan'],
-                onChanged: (val) => setState(() => areaValue = val ?? ''),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Area tinggal',
+                style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
               child: DropdownOnlyField(
-                label: 'Perokok',
+                label: '',
+                value: areaValue,
+                options: ['pedesaan', 'perkotaan'],
+                onChanged: (val) => setState(() => areaValue = val ?? ''),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+              child: Text(
+                'Perokok',
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
+              child: DropdownOnlyField(
+                label: '',
                 value: rokokValue,
                 options: ['tidak', 'iya'],
                 onChanged: (val) => setState(() => rokokValue = val ?? ''),

@@ -260,6 +260,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
+                            fontFamily: 'Montserrat',
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -268,6 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
+                            fontFamily: 'Montserrat',
                           ),
                         ),
                       ],
@@ -293,6 +295,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontFamily: 'Montserrat',
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -329,10 +332,40 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _confirmAndSaveProfile,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.black45,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ).copyWith(
+                            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) {
+                                  return Colors.grey;
+                                }
+                                return Colors.transparent;
+                              },
+                            ),
+                          ),
+                          icon: const Icon(Icons.update, size: 20),
+                          label: _isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                                  'Update Informasi',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                ),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -363,6 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
+                                          fontFamily: 'Montserrat',
                                         ),
                                       ),
                               ],
@@ -392,6 +426,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontFamily: 'Montserrat',
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -415,10 +450,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _confirmAndSavePassword,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -449,6 +484,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
+                                          fontFamily: 'Montserrat',
                                         ),
                                       ),
                               ],
@@ -478,14 +514,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                          fontFamily: 'Montserrat',
                         ),
                       ),
                       const SizedBox(height: 16),
                       Center(
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
                           onPressed: _isLoading ? null : _logout,
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -516,6 +553,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
+                                          fontFamily: 'Montserrat',
                                         ),
                                       ),
                               ],
@@ -564,6 +602,7 @@ class _ProfilePageState extends State<ProfilePage> {
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: Colors.white70,
+              fontFamily: 'Montserrat',
             ),
           ),
           const SizedBox(height: 8),
