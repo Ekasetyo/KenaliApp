@@ -534,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
               barTouchData: BarTouchData(
                 enabled: true,
                 touchTooltipData: BarTouchTooltipData(
-                  getTooltipColor: (group) => Colors.black87,
+                  tooltipBackgroundColor: Colors.black87,
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     return BarTooltipItem(
                       rod.toY.toInt().toString(),

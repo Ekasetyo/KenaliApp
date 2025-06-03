@@ -49,7 +49,7 @@ class DropdownOnlyField extends StatelessWidget {
               isExpanded: true,
               value: value.isEmpty ? null : value,
               hint: Text(
-                'Pilih Opsi',
+                'Pilih ${label.toLowerCase()}',
                 style: const TextStyle(color: Colors.grey),
               ),
               items: options.map((opt) {

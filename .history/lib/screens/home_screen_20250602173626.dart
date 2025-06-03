@@ -24,72 +24,27 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> newsList = [];
   Map<int, int> detectionData = {};
   String? _userId;
-  bool isLoading = true;
-  String? errorMessage;
+  bool isLoading = true; // Indikator loading
+  String? errorMessage; // Pesan error jika API gagal
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _fetchArticles();
+    _fetchDetectionData();
   }
 
   Future<void> _loadUserData() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userDataString = prefs.getString('user_data');
-      print('Raw user_data: $userDataString'); // Debugging
-      if (userDataString != null) {
-        try {
-          final userData = jsonDecode(userDataString);
-          print('Parsed user_data: $userData'); // Debugging
-          if (mounted) {
-            setState(() {
-              _username = userData['name']?.toString() ?? 'Pengguna';
-              _userId = userData['id']?.toString();
-            });
-            if (_userId != null) {
-              await Future.wait([
-                _fetchArticles(),
-                _fetchDetectionData(),
-              ]);
-              if (mounted) {
-                setState(() {
-                  isLoading = false;
-                });
-              }
-            } else {
-              if (mounted) {
-                setState(() {
-                  isLoading = false;
-                  errorMessage = 'User ID tidak ditemukan di data pengguna. Silakan login kembali.';
-                });
-              }
-            }
-          }
-        } catch (e) {
-          if (mounted) {
-            setState(() {
-              isLoading = false;
-              errorMessage = 'Error parsing user data: $e';
-            });
-            print('Error parsing user data: $e');
-          }
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-            errorMessage = 'Data pengguna tidak tersedia di penyimpanan. Silakan login kembali.';
-          });
-        }
-      }
-    } catch (e) {
+    final prefs = await SharedPreferences.getInstance();
+    final userDataString = prefs.getString('user_data');
+    if (userDataString != null) {
+      final userData = jsonDecode(userDataString);
       if (mounted) {
         setState(() {
-          isLoading = false;
-          errorMessage = 'Error memuat data pengguna: $e';
+          _username = userData['name'] ?? 'Pengguna';
+          _userId = userData['id']?.toString();
         });
-        print('Error loading user data: $e');
       }
     }
   }
@@ -98,18 +53,16 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final response = await http
           .post(Uri.parse('http://127.0.0.1:8000/api/artikel'))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10)); // Timeout 10 detik
       if (mounted) {
         if (response.statusCode == 200) {
-          final responseData = jsonDecode(response.body);
-          print('Articles response: $responseData'); // Debugging
-          final List<dynamic> articles = responseData['data'] ?? [];
+          final List<dynamic> articles = jsonDecode(response.body)['data'];
           setState(() {
             newsList = articles.take(5).map((article) {
               return {
-                'title': article['judul']?.toString() ?? '',
-                'description': article['deskripsi']?.toString() ?? '',
-                'url': article['sumber']?.toString() ?? '',
+                "title": article['judul'],
+                "description": article['deskripsi'],
+                "url": article['sumber'],
               };
             }).toList();
           });
@@ -125,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           errorMessage = 'Error mengambil artikel: $e';
         });
-        print('Error fetching articles: $e');
+        print('Error: $e');
       }
     }
   }
@@ -142,24 +95,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/deteksi_per_bulan'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'user_id': _userId}),
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse('http://127.0.0.1:8000/api/deteksi_per_bulan'),
+            body: {'user_id': _userId},
+          )
+          .timeout(const Duration(seconds: 10)); // Timeout 10 detik
 
       if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
         if (response.statusCode == 200) {
           final Map<String, dynamic> responseData = jsonDecode(response.body);
           print('Response detection data: $responseData'); // Debugging
           if (responseData['status'] == 'success') {
-            final Map<String, dynamic> data = responseData['data'] ?? {};
+            final Map<String, dynamic> data = responseData['data'];
             setState(() {
               detectionData = {
-                for (var entry in data.entries)
-                  int.parse(entry.key): (entry.value as num).toInt()
+                for (var entry in data.entries) int.parse(entry.key): entry.value
               };
-              print('Detection data: $detectionData'); // Debugging
             });
           } else {
             setState(() {
@@ -176,15 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
+          isLoading = false;
           errorMessage = 'Error mengambil data deteksi: $e';
         });
         print('Error fetching detection data: $e');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
       }
     }
   }
@@ -405,22 +355,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (errorMessage != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          children: [
-            Text(
-              errorMessage!,
-              style: const TextStyle(color: Colors.red, fontSize: 14),
-            ),
-            if (errorMessage!.contains('login kembali'))
-              ElevatedButton(
-                onPressed: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.clear();
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
-                child: const Text('Login Ulang'),
-              ),
-          ],
+        child: Text(
+          errorMessage!,
+          style: const TextStyle(color: Colors.red, fontSize: 14),
         ),
       );
     }
@@ -457,10 +394,9 @@ class _HomeScreenState extends State<HomeScreen> {
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
               maxY: (detectionData.values.isNotEmpty
-                      ? detectionData.values.reduce((a, b) => a > b ? a : b).toDouble() + 2
+                      ? detectionData.values.reduce((a, b) => a > b ? a : b)
                       : 10)
                   .toDouble(),
-              minY: 0,
               barGroups: List.generate(12, (index) {
                 final month = index + 1;
                 final count = detectionData[month]?.toDouble() ?? 0;
@@ -471,7 +407,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       toY: count,
                       color: const Color(0xFF2A9A9E),
                       width: 15,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                     ),
                   ],
                 );
@@ -482,13 +417,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     showTitles: true,
                     reservedSize: 40,
                     getTitlesWidget: (value, meta) {
-                      if (value == value.toInt()) {
-                        return Text(
-                          value.toInt().toString(),
-                          style: const TextStyle(color: Colors.black54, fontSize: 12),
-                        );
-                      }
-                      return const Text('');
+                      return Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(color: Colors.black54, fontSize: 12),
+                      );
                     },
                   ),
                 ),
@@ -520,29 +452,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
-              gridData: FlGridData(
-                show: true,
-                drawVerticalLine: false,
-                getDrawingHorizontalLine: (value) {
-                  return FlLine(
-                    color: Colors.grey.withOpacity(0.2),
-                    strokeWidth: 1,
-                  );
-                },
-              ),
+              gridData: const FlGridData(show: false),
               borderData: FlBorderData(show: false),
-              barTouchData: BarTouchData(
-                enabled: true,
-                touchTooltipData: BarTouchTooltipData(
-                  getTooltipColor: (group) => Colors.black87,
-                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    return BarTooltipItem(
-                      rod.toY.toInt().toString(),
-                      const TextStyle(color: Colors.white, fontSize: 12),
-                    );
-                  },
-                ),
-              ),
             ),
           ),
         ),
