@@ -8,7 +8,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  fl_chart: ^0.68.0
+  fl_chart: ^058
   flutter:
     sdk: flutter
   font_awesome_flutter: ^10.7.0
